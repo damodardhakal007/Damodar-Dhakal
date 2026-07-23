@@ -38,7 +38,7 @@
             display: grid;
             grid-template-columns: 1fr auto;
             gap: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 8px;
         }
         .lookup-controls input {
             width: 100%;
@@ -55,6 +55,23 @@
             color: #5eead4;
             background: transparent;
             cursor: pointer;
+        }
+        .suggestion-list {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            max-height: 220px;
+            overflow-y: auto;
+            margin-bottom: 24px;
+            display: none;
+        }
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .suggestion-item:hover {
+            background: rgba(94,234,212,0.14);
         }
         .lookup-result {
             background: rgba(255,255,255,0.04);
@@ -113,12 +130,13 @@
             <h1>Municipality Lookup</h1>
             <p>Search by municipality name to find the corresponding province, district, and postal code for Nepali municipalities.</p>
             <div class="lookup-controls">
-                <input id="municipalityInput" type="search" placeholder="Enter municipality name (e.g. Kathmandu)" autocomplete="off">
+                <input id="municipalityInput" type="search" placeholder="Search municipality or postal code" autocomplete="off">
                 <button onclick="performLookup()">Search</button>
             </div>
+            <div id="suggestions" class="suggestion-list"></div>
             <div class="lookup-result" id="lookupResult">
                 <strong>Result</strong>
-                <p>Enter a municipality name above and click Search.</p>
+                <p>Enter a municipality name or postal code above and click Search.</p>
             </div>
             <table class="lookup-table">
                 <thead>
@@ -170,17 +188,24 @@
         }
 
         function performLookup() {
-            const query = document.getElementById('municipalityInput').value.trim().toLowerCase();
+            const query = document.getElementById('municipalityInput').value.trim();
             const result = document.getElementById('lookupResult');
+            const normalized = query.toLowerCase();
 
             if (!query) {
-                result.innerHTML = '<strong>Result</strong><p>Please enter a municipality name.</p>';
+                result.innerHTML = '<strong>Result</strong><p>Please enter a municipality name or postal code.</p>';
                 return;
             }
 
-            const matched = municipalities.filter(m => m.name.toLowerCase().includes(query));
+            const matched = municipalities.filter(m => {
+                return m.name.toLowerCase().includes(normalized)
+                    || m.district.toLowerCase().includes(normalized)
+                    || m.province.toLowerCase().includes(normalized)
+                    || m.postalCode.toLowerCase().includes(normalized);
+            });
+
             if (matched.length === 0) {
-                result.innerHTML = '<strong>Result</strong><p>No municipality found. Try a different name or spelling.</p>';
+                result.innerHTML = '<strong>Result</strong><p>No municipality found. Try a different name, district or postal code.</p>';
                 return;
             }
 
@@ -191,9 +216,51 @@
                     Postal Code: ${m.postalCode}
                 </li>
             `).join('')}</ul>`;
+            hideSuggestions();
+        }
+
+        function renderSuggestions(filter) {
+            const suggestions = document.getElementById('suggestions');
+            const query = filter.trim().toLowerCase();
+            if (!query) {
+                suggestions.style.display = 'none';
+                suggestions.innerHTML = '';
+                return;
+            }
+
+            const matches = municipalities.filter(m => m.name.toLowerCase().includes(query)).slice(0, 8);
+            if (matches.length === 0) {
+                suggestions.style.display = 'none';
+                suggestions.innerHTML = '';
+                return;
+            }
+
+            suggestions.innerHTML = matches.map(m => `
+                <div class="suggestion-item" onclick="selectSuggestion('${m.name.replace(/'/g, "\\'")}')">
+                    ${m.name}
+                </div>
+            `).join('');
+            suggestions.style.display = 'block';
+        }
+
+        function selectSuggestion(value) {
+            document.getElementById('municipalityInput').value = value;
+            performLookup();
+        }
+
+        function hideSuggestions() {
+            const suggestions = document.getElementById('suggestions');
+            suggestions.style.display = 'none';
         }
 
         renderTable();
+        document.getElementById('municipalityInput').addEventListener('input', e => renderSuggestions(e.target.value));
+        document.addEventListener('click', e => {
+            const suggestions = document.getElementById('suggestions');
+            if (!suggestions.contains(e.target) && e.target.id !== 'municipalityInput') {
+                hideSuggestions();
+            }
+        });
     </script>
 </body>
 </html>

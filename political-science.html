@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Political Science Database</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #050816 0%, #0f172a 100%);
+            color: #fff;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        .protected-card {
+            width: 100%;
+            max-width: 620px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+            backdrop-filter: blur(16px);
+        }
+        .protected-card h1 {
+            margin-bottom: 14px;
+            color: #fff;
+        }
+        .protected-card p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+        .protected-card input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.25);
+            color: #fff;
+            margin-bottom: 18px;
+        }
+        .protected-card button {
+            padding: 14px 20px;
+            border-radius: 14px;
+            border: 1px solid #5eead4;
+            background: transparent;
+            color: #5eead4;
+            cursor: pointer;
+            width: 100%;
+        }
+        .protected-card .error {
+            color: #ff8b8b;
+            margin-top: 12px;
+        }
+        .protected-content {
+            display: none;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            color: #5eead4;
+            text-decoration: none;
+            border: 1px solid #5eead4;
+            padding: 10px 16px;
+            border-radius: 999px;
+        }
+    </style>
+</head>
+<body>
+    <div class="protected-card" id="protectCard">
+        <a href="tools.html" class="back-link">← Back to Tools</a>
+        <h1>Political Science Database</h1>
+        <p>This page is protected. Enter the password to access the political science database.</p>
+        <input type="password" id="dbPassword" placeholder="Enter password" autocomplete="off">
+        <button onclick="checkPassword()">Unlock</button>
+        <p class="error" id="errorText"></p>
+    </div>
+    <div class="protected-card protected-content" id="contentCard">
+        <a href="tools.html" class="back-link">← Back to Tools</a>
+        <h1>Political Science Database</h1>
+        <p>You have unlocked the protected database. Use the links below to navigate sensitive political science data.</p>
+        <ul>
+            <li>Database placeholder content goes here.</li>
+            <li>Replace with actual protected political science information.</li>
+        </ul>
+    </div>
+    <script>
+        const PASSWORD = '7777777';
+        function checkPassword() {
+            const input = document.getElementById('dbPassword').value;
+            const errorText = document.getElementById('errorText');
+            if (input === PASSWORD) {
+                document.getElementById('protectCard').style.display = 'none';
+                document.getElementById('contentCard').style.display = 'block';
+                errorText.textContent = '';
+            } else {
+                errorText.textContent = 'Incorrect password. Please try again.';
+            }
+        }
+    </script>
+</body>
+</html>
