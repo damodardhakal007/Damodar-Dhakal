@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Municipality Lookup | Tools</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #050816 0%, #0f172a 100%);
+            color: #fff;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+        .lookup-page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 80px 20px 60px;
+        }
+        .lookup-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+            backdrop-filter: blur(16px);
+        }
+        .lookup-card h1 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .lookup-card p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+        .lookup-controls {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .lookup-controls input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.25);
+            color: #fff;
+        }
+        .lookup-controls button {
+            padding: 14px 20px;
+            border-radius: 14px;
+            border: 1px solid #5eead4;
+            color: #5eead4;
+            background: transparent;
+            cursor: pointer;
+        }
+        .lookup-result {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 22px;
+            min-height: 140px;
+        }
+        .lookup-result strong {
+            color: #fff;
+        }
+        .lookup-result ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .lookup-result li {
+            margin-bottom: 10px;
+        }
+        .lookup-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 32px;
+        }
+        .lookup-table th,
+        .lookup-table td {
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 14px;
+            text-align: left;
+        }
+        .lookup-table th {
+            background: rgba(255,255,255,0.08);
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            color: #5eead4;
+            text-decoration: none;
+            border: 1px solid #5eead4;
+            padding: 10px 16px;
+            border-radius: 999px;
+        }
+        @media (max-width: 768px) {
+            .lookup-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lookup-page">
+        <div class="lookup-card">
+            <a href="tools.html" class="back-link">← Back to Tools</a>
+            <h1>Municipality Lookup</h1>
+            <p>Search by municipality name to find the corresponding province, district, and postal code for Nepali municipalities.</p>
+            <div class="lookup-controls">
+                <input id="municipalityInput" type="search" placeholder="Enter municipality name (e.g. Kathmandu)" autocomplete="off">
+                <button onclick="performLookup()">Search</button>
+            </div>
+            <div class="lookup-result" id="lookupResult">
+                <strong>Result</strong>
+                <p>Enter a municipality name above and click Search.</p>
+            </div>
+            <table class="lookup-table">
+                <thead>
+                    <tr>
+                        <th>Municipality</th>
+                        <th>District</th>
+                        <th>Province</th>
+                        <th>Postal Code</th>
+                    </tr>
+                </thead>
+                <tbody id="municipalityTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        const municipalities = [
+            { name: 'Kathmandu Metropolitan City', district: 'Kathmandu', province: 'Bagmati Province', postalCode: '44600' },
+            { name: 'Lalitpur Metropolitan City', district: 'Lalitpur', province: 'Bagmati Province', postalCode: '44700' },
+            { name: 'Bhaktapur Municipality', district: 'Bhaktapur', province: 'Bagmati Province', postalCode: '44800' },
+            { name: 'Pokhara Metropolitan City', district: 'Kaski', province: 'Gandaki Province', postalCode: '33700' },
+            { name: 'Bharatpur Metropolitan City', district: 'Chitwan', province: 'Bagmati Province', postalCode: '44200' },
+            { name: 'Biratnagar Metropolitan City', district: 'Morang', province: 'Province No. 1', postalCode: '56613' },
+            { name: 'Birgunj Metropolitan City', district: 'Parsa', province: 'Madhesh Province', postalCode: '44300' },
+            { name: 'Dharan Sub-Metropolitan City', district: 'Sunsari', province: 'Province No. 1', postalCode: '56800' },
+            { name: 'Hetauda Sub-Metropolitan City', district: 'Makwanpur', province: 'Bagmati Province', postalCode: '44100' },
+            { name: 'Janakpur Dham', district: 'Dhanusha', province: 'Madhesh Province', postalCode: '45600' },
+            { name: 'Nepalgunj Sub-Metropolitan City', district: 'Banke', province: 'Lumbini Province', postalCode: '21800' },
+            { name: 'Butwal Sub-Metropolitan City', district: 'Rupandehi', province: 'Lumbini Province', postalCode: '32900' },
+            { name: 'Dhangadhi Sub-Metropolitan City', district: 'Kailali', province: 'Karnali Province', postalCode: '10900' },
+            { name: 'Itahari Sub-Metropolitan City', district: 'Sunsari', province: 'Province No. 1', postalCode: '56700' },
+            { name: 'Bhairahawa Sub-Metropolitan City', district: 'Rupandehi', province: 'Lumbini Province', postalCode: '32903' },
+            { name: 'Kavrepalanchok Municipality', district: 'Kavrepalanchok', province: 'Bagmati Province', postalCode: '45100' },
+            { name: 'Damak Municipality', district: 'Jhapa', province: 'Province No. 1', postalCode: '57203' },
+            { name: 'Bharatpur Municipality', district: 'Chitwan', province: 'Bagmati Province', postalCode: '44202' },
+            { name: 'Lahan Municipality', district: 'Siraha', province: 'Madhesh Province', postalCode: '56500' },
+            { name: 'Ghorahi Sub-Metropolitan City', district: 'Dang', province: 'Lumbini Province', postalCode: '22400' }
+        ];
+
+        function renderTable() {
+            const tbody = document.getElementById('municipalityTableBody');
+            tbody.innerHTML = municipalities.map(m => `
+                <tr>
+                    <td>${m.name}</td>
+                    <td>${m.district}</td>
+                    <td>${m.province}</td>
+                    <td>${m.postalCode}</td>
+                </tr>
+            `).join('');
+        }
+
+        function performLookup() {
+            const query = document.getElementById('municipalityInput').value.trim().toLowerCase();
+            const result = document.getElementById('lookupResult');
+
+            if (!query) {
+                result.innerHTML = '<strong>Result</strong><p>Please enter a municipality name.</p>';
+                return;
+            }
+
+            const matched = municipalities.filter(m => m.name.toLowerCase().includes(query));
+            if (matched.length === 0) {
+                result.innerHTML = '<strong>Result</strong><p>No municipality found. Try a different name or spelling.</p>';
+                return;
+            }
+
+            result.innerHTML = `<strong>Found ${matched.length} result(s):</strong><ul>${matched.map(m => `
+                <li><strong>${m.name}</strong><br>
+                    District: ${m.district}<br>
+                    Province: ${m.province}<br>
+                    Postal Code: ${m.postalCode}
+                </li>
+            `).join('')}</ul>`;
+        }
+
+        renderTable();
+    </script>
+</body>
+</html>
