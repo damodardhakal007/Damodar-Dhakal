@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools | Damodar Dhakal</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #050816 0%, #0f172a 100%);
+            color: #fff;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+        .tools-page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 80px 20px 60px;
+        }
+        .tools-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+            backdrop-filter: blur(16px);
+        }
+        .tools-card h1 {
+            margin-bottom: 12px;
+            color: #fff;
+        }
+        .tools-card p {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+        .tool-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 24px;
+        }
+        .tool-box h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .tool-box a {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .btn-inline {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid #5eead4;
+            color: #5eead4;
+            text-decoration: none;
+        }
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tools-page">
+        <div class="tools-card">
+            <a href="index.html" class="btn-inline">← Back to Home</a>
+            <h1>Tools Hub</h1>
+            <p>This page hosts utility tools and calculators for your work in Nepal’s land measurement and finance environment.</p>
+            <div class="tools-grid">
+                <div class="tool-box">
+                    <h3>Land Measurement Calculator</h3>
+                    <p>Convert between square feet and Nepali land units (Ropani, Aana, Paisa, Daam).</p>
+                    <a href="land-calculation.html" class="btn-inline">Open Calculator</a>
+                </div>
+                <div class="tool-box">
+                    <h3>More tools coming soon</h3>
+                    <p>Additional utility pages can be added here as your toolkit grows.</p>
+                    <span class="btn-inline" style="opacity:0.8; cursor:default;">Coming Soon</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
