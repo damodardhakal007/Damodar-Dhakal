@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Land Calculation | Damodar Dhakal</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #050816 0%, #0f172a 100%);
+            color: #fff;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .calc-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 80px 20px 60px;
+        }
+
+        .calc-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 22px;
+            padding: 30px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+            backdrop-filter: blur(16px);
+        }
+
+        .calc-card h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .calc-card p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .calc-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .calc-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .calc-box label {
+            display: block;
+            margin-bottom: 8px;
+            color: #dbeafe;
+            font-weight: 600;
+        }
+
+        .calc-box input, .calc-box select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.25);
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 999px;
+            border: 1px solid #5eead4;
+            color: #5eead4;
+            background: transparent;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: rgba(94,234,212,0.12);
+        }
+
+        .result {
+            margin-top: 18px;
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(94,234,212,0.1);
+            color: #ccfbf1;
+            border: 1px solid rgba(94,234,212,0.25);
+        }
+
+        @media (max-width: 768px) {
+            .calc-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calc-page">
+        <div class="calc-card">
+            <a href="index.html" class="btn" style="margin-bottom: 16px; display: inline-block;">← Back to Home</a>
+            <h1>Land Measurement Calculator</h1>
+            <p>Convert land area into the traditional Nepali measurement system: Ropani, Aana, Paisa, and Daam.</p>
+
+            <div class="calc-grid">
+                <div class="calc-box">
+                    <label for="squareFeet">Enter area in square feet</label>
+                    <input type="number" id="squareFeet" placeholder="Example: 5476">
+
+                    <div class="btn-row">
+                        <button class="btn" onclick="calculateLand()">Convert to Nepali Units</button>
+                        <button class="btn" onclick="resetForm()">Reset</button>
+                    </div>
+                </div>
+
+                <div class="calc-box">
+                    <label>Result</label>
+                    <div id="resultBox" class="result">Your converted land measurement will appear here.</div>
+                </div>
+            </div>
+
+            <div class="calc-grid-2">
+                <div class="calc-box">
+                    <label for="ropani">Ropani</label>
+                    <input type="number" id="ropani" placeholder="0">
+                    <label for="aana">Aana</label>
+                    <input type="number" id="aana" placeholder="0">
+                    <label for="paisa">Paisa</label>
+                    <input type="number" id="paisa" placeholder="0">
+                    <label for="daam">Daam</label>
+                    <input type="number" id="daam" placeholder="0">
+
+                    <div class="btn-row">
+                        <button class="btn" onclick="calculateReverse()">Convert to Square Feet</button>
+                        <button class="btn" onclick="resetReverseForm()">Reset</button>
+                    </div>
+                </div>
+
+                <div class="calc-box">
+                    <label>Reverse Result</label>
+                    <div id="reverseResultBox" class="result">Square feet result will appear here.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateLand() {
+            const squareFeetValue = parseFloat(document.getElementById('squareFeet').value);
+            const resultBox = document.getElementById('resultBox');
+
+            if (isNaN(squareFeetValue) || squareFeetValue <= 0) {
+                resultBox.innerHTML = 'Please enter a valid positive number.';
+                return;
+            }
+
+            const daamPerSquareFeet = 21.390625;
+            let totalDaam = squareFeetValue / daamPerSquareFeet;
+            let paisaPart = Math.floor(totalDaam / 4);
+            let remainingDaam = totalDaam % 4;
+            let aanaPart = Math.floor(paisaPart / 4);
+            let remainingPaisa = paisaPart % 4;
+            let ropaniPart = Math.floor(aanaPart / 4);
+            let remainingAana = aanaPart % 4;
+
+            let finalRopani = ropaniPart;
+            let finalAana = remainingAana;
+            let finalPaisa = remainingPaisa;
+            let finalDaam = Math.round(remainingDaam * 100) / 100;
+
+            resultBox.innerHTML = `
+                <strong>Approximate conversion:</strong><br>
+                Ropani: ${finalRopani}<br>
+                Aana: ${finalAana}<br>
+                Paisa: ${finalPaisa}<br>
+                Daam: ${finalDaam}
+            `;
+        }
+
+        function calculateReverse() {
+            const reverseResultBox = document.getElementById('reverseResultBox');
+            const ropani = parseFloat(document.getElementById('ropani').value) || 0;
+            const aana = parseFloat(document.getElementById('aana').value) || 0;
+            const paisa = parseFloat(document.getElementById('paisa').value) || 0;
+            const daam = parseFloat(document.getElementById('daam').value) || 0;
+
+            const totalDaam = (ropani * 64) + (aana * 16) + (paisa * 4) + daam;
+
+            if (totalDaam <= 0) {
+                reverseResultBox.innerHTML = 'Please enter at least one positive unit.';
+                return;
+            }
+
+            const squareFeet = totalDaam * 21.390625;
+            reverseResultBox.innerHTML = `
+                <strong>Approximate square feet:</strong><br>
+                ${squareFeet.toFixed(2)} sq ft
+            `;
+        }
+
+        function resetForm() {
+            document.getElementById('squareFeet').value = '';
+            document.getElementById('resultBox').innerHTML = 'Your converted land measurement will appear here.';
+        }
+
+        function resetReverseForm() {
+            document.getElementById('ropani').value = '';
+            document.getElementById('aana').value = '';
+            document.getElementById('paisa').value = '';
+            document.getElementById('daam').value = '';
+            document.getElementById('reverseResultBox').innerHTML = 'Square feet result will appear here.';
+        }
+    </script>
+</body>
+</html>
