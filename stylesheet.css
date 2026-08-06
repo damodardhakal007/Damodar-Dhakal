@@ -50,6 +50,10 @@ body {
     color: var(--text-light);
     background: var(--bg-dark);
     overflow-x: hidden;
+    cursor: auto;
+}
+
+body.custom-cursor {
     cursor: none;
 }
 
