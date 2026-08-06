@@ -220,14 +220,6 @@
                         <label for="nepali-date-input">Nepali date (YYYY-MM-DD in Nepali digits)</label>
                         <input type="text" id="nepali-date-input" placeholder="२०८०-०२-०१" />
                     </div>
-                    <label for="convert-date-format">Choose output format</label>
-                    <select id="convert-date-format">
-                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                        <option value="DD MMM YYYY">DD MMM YYYY</option>
-                        <option value="Long">Day, Month DD, YYYY</option>
-                    </select>
                     <div class="output-box" id="convert-date-output">Choose a conversion mode and date to see the result.</div>
                     <button type="button" id="convert-date-button">Convert Date</button>
                 </div>
@@ -261,7 +253,7 @@
 
             <div class="tool-section">
                 <div class="tool-panel full-width">
-                    <h2>World Clocks</h2>
+                    <h2>World Clocks with Live local date and time for popular countries and regions with their flags.</h2>
                     <p style="color:#a8b9ce; margin-bottom:14px;">Live local date and time for popular countries and regions with their flags.</p>
                     <div class="world-clock-list" id="world-clocks"></div>
                 </div>
@@ -279,7 +271,6 @@
         const nepaliDatePanel = document.getElementById('nepali-date-panel');
         const englishDateInput = document.getElementById('english-date-input');
         const nepaliDateInput = document.getElementById('nepali-date-input');
-        const convertDateFormat = document.getElementById('convert-date-format');
         const convertDateOutput = document.getElementById('convert-date-output');
         const convertDateButton = document.getElementById('convert-date-button');
         const ageDateInput = document.getElementById('age-date-input');
@@ -390,7 +381,7 @@
                     convertDateOutput.textContent = 'Invalid English date. Use the date picker.';
                     return;
                 }
-                const englishFormatted = formatDateForOutput(date, convertDateFormat.value);
+                        const englishFormatted = formatDateForOutput(date, 'YYYY-MM-DD');
                 const iso = date.toISOString().slice(0, 10);
                 const weekday = date.toLocaleString('default', { weekday: 'long' });
                 const bsDate = formatBsDate(date);
@@ -415,7 +406,7 @@
                 convertDateOutput.textContent = 'Invalid Nepali date values. Please check year, month, and day.';
                 return;
             }
-            const englishFormatted = formatDateForOutput(date, convertDateFormat.value);
+                const englishFormatted = formatDateForOutput(date, 'YYYY-MM-DD');
             const weekday = date.toLocaleString('default', { weekday: 'long' });
             const iso = date.toISOString().slice(0, 10);
             convertDateOutput.textContent = `English output: ${englishFormatted}\nWeekday: ${weekday}\nISO: ${iso}`;
