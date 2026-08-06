@@ -88,6 +88,42 @@
         .tool-panel button:hover {
             transform: translateY(-1px);
         }
+        .toggle-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .toggle-buttons label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.16);
+            background: rgba(255,255,255,0.05);
+            cursor: pointer;
+            color: #cdd9ff;
+            transition: border-color .2s ease, background .2s ease, color .2s ease;
+        }
+        .toggle-buttons input[type="radio"] {
+            display: none;
+        }
+        .toggle-buttons input[type="radio"]:checked + span {
+            background: linear-gradient(135deg, #00f5ff, #ff00e5);
+            border-color: transparent;
+            color: #06101a;
+            box-shadow: 0 8px 24px rgba(0,245,255,0.12);
+        }
+        .toggle-buttons span {
+            display: inline-flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 14px;
+            border-radius: 14px;
+        }
         .output-box {
             background: rgba(0,0,0,0.2);
             border: 1px solid rgba(255,255,255,0.12);
@@ -151,9 +187,39 @@
 
             <div class="tool-section">
                 <div class="tool-panel">
+                    <h2>Live Local Time</h2>
+                    <div class="toggle-buttons">
+                        <label>
+                            <input type="radio" name="live-clock-mode" value="en" checked />
+                            <span>English</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="live-clock-mode" value="nep" />
+                            <span>Nepali</span>
+                        </label>
+                    </div>
+                    <div class="output-box" id="live-clock-output">Current local time will appear here every second.</div>
+                </div>
+                <div class="tool-panel">
                     <h2>Date Converter</h2>
-                    <label for="convert-date-input">Select a date</label>
-                    <input type="date" id="convert-date-input" />
+                    <div class="toggle-buttons">
+                        <label>
+                            <input type="radio" name="conversion-mode" value="en-to-nep" checked />
+                            <span>English → Nepali</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="conversion-mode" value="nep-to-en" />
+                            <span>Nepali → English</span>
+                        </label>
+                    </div>
+                    <div id="english-date-panel">
+                        <label for="english-date-input">English date</label>
+                        <input type="date" id="english-date-input" />
+                    </div>
+                    <div id="nepali-date-panel" style="display:none;">
+                        <label for="nepali-date-input">Nepali date (YYYY-MM-DD in Nepali digits)</label>
+                        <input type="text" id="nepali-date-input" placeholder="२०८०-०२-०१" />
+                    </div>
                     <label for="convert-date-format">Choose output format</label>
                     <select id="convert-date-format">
                         <option value="YYYY-MM-DD">YYYY-MM-DD</option>
@@ -162,24 +228,22 @@
                         <option value="DD MMM YYYY">DD MMM YYYY</option>
                         <option value="Long">Day, Month DD, YYYY</option>
                     </select>
-                    <label for="convert-date-day">Day of week</label>
-                    <div class="output-box" id="convert-date-output">Choose a date to see the converted values.</div>
+                    <div class="output-box" id="convert-date-output">Choose a conversion mode and date to see the result.</div>
                     <button type="button" id="convert-date-button">Convert Date</button>
-                </div>
-
-                <div class="tool-panel">
-                    <h2>Age Calculator</h2>
-                    <label for="age-date-input">Enter birth date</label>
-                    <input type="date" id="age-date-input" />
-                    <label for="age-result">Age result</label>
-                    <div class="output-box" id="age-output">Enter a birth date and click calculate to see age in years, months, and days.</div>
-                    <button type="button" id="age-calc-button">Calculate Age</button>
                 </div>
             </div>
 
-            <div class="divider"></div>
-
             <div class="tool-section">
+                <div class="tool-panel">
+                    <h2>Age Calculator</h2>
+                    <label for="age-date-input">English birth date</label>
+                    <input type="date" id="age-date-input" />
+                    <label for="nepali-age-date-input">Nepali birth date (YYYY-MM-DD in Nepali digits)</label>
+                    <input type="text" id="nepali-age-date-input" placeholder="२०८०-०२-०१" />
+                    <div class="output-box" id="age-output">Enter a birth date and click calculate to see age in years, months, and days.</div>
+                    <button type="button" id="age-calc-button">Calculate Age</button>
+                </div>
+
                 <div class="tool-panel">
                     <h2>Countdown & Day Finder</h2>
                     <label for="countdown-date-input">Select a date to count down to</label>
@@ -190,22 +254,33 @@
                     <input type="date" id="weekday-date-input" />
                     <div class="output-box" id="weekday-output">Pick a date to see the weekday and whether it falls on a leap year.</div>
                 </div>
+            </div>
 
-                <div class="tool-panel">
+            <div class="tool-section">
+                <div class="tool-panel full-width">
                     <h2>World Clocks</h2>
                     <p style="color:#a8b9ce; margin-bottom:14px;">Live local date and time for popular countries and regions with their flags.</p>
                     <div class="world-clock-list" id="world-clocks"></div>
                 </div>
             </div>
+
+            <div class="divider"></div>
         </div>
     </div>
 
     <script>
-        const convertDateInput = document.getElementById('convert-date-input');
+        const liveClockOutput = document.getElementById('live-clock-output');
+        const liveClockModeInputs = document.querySelectorAll('input[name="live-clock-mode"]');
+        const conversionModeInputs = document.querySelectorAll('input[name="conversion-mode"]');
+        const englishDatePanel = document.getElementById('english-date-panel');
+        const nepaliDatePanel = document.getElementById('nepali-date-panel');
+        const englishDateInput = document.getElementById('english-date-input');
+        const nepaliDateInput = document.getElementById('nepali-date-input');
         const convertDateFormat = document.getElementById('convert-date-format');
         const convertDateOutput = document.getElementById('convert-date-output');
         const convertDateButton = document.getElementById('convert-date-button');
         const ageDateInput = document.getElementById('age-date-input');
+        const nepaliAgeDateInput = document.getElementById('nepali-age-date-input');
         const ageOutput = document.getElementById('age-output');
         const ageCalcButton = document.getElementById('age-calc-button');
         const countdownDateInput = document.getElementById('countdown-date-input');
@@ -231,6 +306,9 @@
             return String(number).padStart(2, '0');
         }
 
+        const nepaliDigits = ['०','१','२','३','४','५','६','७','८','९'];
+        const latinDigits  = ['0','1','2','3','4','5','6','7','8','9'];
+
         function formatDateForOutput(date, format) {
             const year = date.getFullYear();
             const month = pad(date.getMonth() + 1);
@@ -248,35 +326,143 @@
             }
         }
 
+        function toNepaliDigits(text) {
+            return String(text).split('').map(ch => {
+                const idx = latinDigits.indexOf(ch);
+                return idx === -1 ? ch : nepaliDigits[idx];
+            }).join('');
+        }
+
+        function toLatinDigits(text) {
+            return String(text).split('').map(ch => {
+                const idx = nepaliDigits.indexOf(ch);
+                return idx === -1 ? ch : latinDigits[idx];
+            }).join('');
+        }
+
+        function parseNepaliDate(nepaliDate) {
+            const latin = toLatinDigits(nepaliDate.trim());
+            const parts = latin.split('-');
+            if (parts.length !== 3) return null;
+            const [year, month, day] = parts.map(p => Number(p));
+            if ([year, month, day].some(n => Number.isNaN(n))) return null;
+            return { year, month, day };
+        }
+
+        function buildDateFromParts(parts) {
+            if (!parts || parts.month < 1 || parts.month > 12 || parts.day < 1 || parts.day > 31) return null;
+            const date = new Date(parts.year, parts.month - 1, parts.day);
+            if (date.getFullYear() !== parts.year || date.getMonth() + 1 !== parts.month || date.getDate() !== parts.day) return null;
+            return date;
+        }
+
+        function getCheckedValue(inputs) {
+            for (const input of inputs) {
+                if (input.checked) return input.value;
+            }
+            return null;
+        }
+
+        function supportsNepaliBs() {
+            return Intl.DateTimeFormat.supportedLocalesOf(['ne-NP-u-ca-bs']).length > 0;
+        }
+
+        function formatBsDate(date) {
+            if (!supportsNepaliBs()) return null;
+            return new Intl.DateTimeFormat('ne-NP-u-ca-bs', {
+                year: 'numeric', month: '2-digit', day: '2-digit'
+            }).format(date);
+        }
+
         function updateDateConverter() {
-            const value = convertDateInput.value;
+            const direction = getCheckedValue(conversionModeInputs) || 'en-to-nep';
+
+            if (direction === 'en-to-nep') {
+                const value = englishDateInput.value;
+                if (!value) {
+                    convertDateOutput.textContent = 'Choose an English date to convert.';
+                    return;
+                }
+                const date = new Date(value + 'T00:00:00');
+                if (Number.isNaN(date.getTime())) {
+                    convertDateOutput.textContent = 'Invalid English date. Use the date picker.';
+                    return;
+                }
+                const englishFormatted = formatDateForOutput(date, convertDateFormat.value);
+                const iso = date.toISOString().slice(0, 10);
+                const weekday = date.toLocaleString('default', { weekday: 'long' });
+                const bsDate = formatBsDate(date);
+                const nepaliDigitsFormatted = toNepaliDigits(englishFormatted.replace(/\d/g, d => nepaliDigits[Number(d)]));
+                const nepaliOutput = bsDate ? `Nepali BS: ${bsDate}` : `Nepali digits: ${nepaliDigitsFormatted}`;
+                convertDateOutput.textContent = `${nepaliOutput}\nEnglish output: ${englishFormatted}\nWeekday: ${weekday}\nISO: ${iso}`;
+                return;
+            }
+
+            const value = nepaliDateInput.value;
             if (!value) {
-                convertDateOutput.textContent = 'Choose a date to convert it into multiple formats.';
+                convertDateOutput.textContent = 'Enter a Nepali date in YYYY-MM-DD format using Nepali digits.';
                 return;
             }
-            const date = new Date(value + 'T00:00:00');
-            if (Number.isNaN(date.getTime())) {
-                convertDateOutput.textContent = 'Invalid date. Please choose a valid date from the picker.';
+            const parts = parseNepaliDate(value);
+            if (!parts) {
+                convertDateOutput.textContent = 'Invalid Nepali date. Use Nepali digits like २०८०-०२-०१.';
                 return;
             }
-            const formatted = formatDateForOutput(date, convertDateFormat.value);
+            const date = buildDateFromParts(parts);
+            if (!date) {
+                convertDateOutput.textContent = 'Invalid Nepali date values. Please check year, month, and day.';
+                return;
+            }
+            const englishFormatted = formatDateForOutput(date, convertDateFormat.value);
             const weekday = date.toLocaleString('default', { weekday: 'long' });
             const iso = date.toISOString().slice(0, 10);
-            convertDateOutput.textContent = `Converted date: ${formatted}\nISO format: ${iso}\nWeekday: ${weekday}`;
+            convertDateOutput.textContent = `English output: ${englishFormatted}\nWeekday: ${weekday}\nISO: ${iso}`;
+        }
+
+        function updateConversionPanels() {
+            const direction = getCheckedValue(conversionModeInputs) || 'en-to-nep';
+            if (direction === 'en-to-nep') {
+                englishDatePanel.style.display = 'block';
+                nepaliDatePanel.style.display = 'none';
+            } else {
+                englishDatePanel.style.display = 'none';
+                nepaliDatePanel.style.display = 'block';
+            }
+            updateDateConverter();
+        }
+
+        function normalizeDateInput(value) {
+            if (!value) return null;
+            const parts = value.indexOf('T') === -1 ? value : value.split('T')[0];
+            return new Date(parts + 'T00:00:00');
         }
 
         function calculateAge() {
-            const value = ageDateInput.value;
-            if (!value) {
-                ageOutput.textContent = 'Enter your birth date to calculate your age.';
+            const englishValue = ageDateInput.value;
+            const nepaliValue = nepaliAgeDateInput.value.trim();
+            let birth = null;
+            let source = 'English';
+
+            if (englishValue) {
+                birth = normalizeDateInput(englishValue);
+            } else if (nepaliValue) {
+                const parts = parseNepaliDate(nepaliValue);
+                if (!parts) {
+                    ageOutput.textContent = 'Invalid Nepali birth date. Use Nepali digits in YYYY-MM-DD format.';
+                    return;
+                }
+                birth = buildDateFromParts(parts);
+                source = 'Nepali';
+            } else {
+                ageOutput.textContent = 'Enter a birth date in English or Nepali format.';
                 return;
             }
-            const birth = new Date(value + 'T00:00:00');
+
+            if (!birth || Number.isNaN(birth.getTime())) {
+                ageOutput.textContent = 'Invalid birth date. Please check the date input.';
+                return;
+            }
             const today = new Date();
-            if (Number.isNaN(birth.getTime())) {
-                ageOutput.textContent = 'Invalid birth date. Please choose a valid date.';
-                return;
-            }
             if (birth > today) {
                 ageOutput.textContent = 'Birth date cannot be in the future.';
                 return;
@@ -293,7 +479,15 @@
                 years -= 1;
                 months += 12;
             }
-            ageOutput.textContent = `Age: ${years} years, ${months} months, ${days} days.`;
+            const birthString = source === 'English' ? birth.toISOString().slice(0, 10) : toNepaliDigits(`${birth.getFullYear()}-${pad(birth.getMonth()+1)}-${pad(birth.getDate())}`);
+            ageOutput.textContent = `Birth date (${source}): ${birthString}\nAge: ${years} years, ${months} months, ${days} days.`;
+        }
+
+        function updateLiveClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour12: false });
+            const date = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: '2-digit' });
+            liveClockOutput.textContent = `Local date: ${date}    Local time: ${time}`;
         }
 
         function updateCountdown() {
@@ -302,9 +496,9 @@
                 countdownOutput.textContent = 'Choose a future date to see the countdown.';
                 return;
             }
-            const target = new Date(value + 'T00:00:00');
+            const target = normalizeDateInput(value);
             const now = new Date();
-            if (Number.isNaN(target.getTime())) {
+            if (!target || Number.isNaN(target.getTime())) {
                 countdownOutput.textContent = 'Invalid date. Please choose a valid date.';
                 return;
             }
@@ -326,8 +520,8 @@
                 weekdayOutput.textContent = 'Choose a date to see its weekday and leap year status.';
                 return;
             }
-            const date = new Date(value + 'T00:00:00');
-            if (Number.isNaN(date.getTime())) {
+            const date = normalizeDateInput(value);
+            if (!date || Number.isNaN(date.getTime())) {
                 weekdayOutput.textContent = 'Invalid date. Please choose a valid date.';
                 return;
             }
@@ -356,20 +550,31 @@
             }).join('');
         }
 
+        function attachRadioListeners(inputs, handler) {
+            inputs.forEach(input => input.addEventListener('change', handler));
+        }
+
+        attachRadioListeners(conversionModeInputs, updateConversionPanels);
+        attachRadioListeners(liveClockModeInputs, formatLiveClock);
+
         convertDateButton.addEventListener('click', updateDateConverter);
-        convertDateInput.addEventListener('change', updateDateConverter);
+        englishDateInput.addEventListener('change', updateDateConverter);
+        nepaliDateInput.addEventListener('input', updateDateConverter);
         convertDateFormat.addEventListener('change', updateDateConverter);
         ageCalcButton.addEventListener('click', calculateAge);
         ageDateInput.addEventListener('change', calculateAge);
+        nepaliAgeDateInput.addEventListener('input', calculateAge);
         countdownDateInput.addEventListener('change', updateCountdown);
         weekdayDateInput.addEventListener('change', updateWeekday);
 
         setInterval(() => {
+            formatLiveClock();
             updateCountdown();
             updateWorldTimes();
         }, 1000);
 
-        updateDateConverter();
+        formatLiveClock();
+        updateConversionPanels();
         calculateAge();
         updateCountdown();
         updateWeekday();
