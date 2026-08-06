@@ -678,6 +678,49 @@ function launchConfetti() {
 }
 
 // ============================================
+// PLAY STORE REDIRECT
+// ============================================
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.damodardhakal.damodardhakal&hl=ne';
+const playStoreLinks = document.querySelectorAll('a.playstore-link');
+
+function isAndroidBrowser() {
+    return /Android/i.test(navigator.userAgent);
+}
+
+function openPlayStoreApp(url) {
+    const appUri = 'market://details?id=com.damodardhakal.damodardhakal';
+    const timeout = 1200;
+    const start = Date.now();
+    let fallbackTimer;
+
+    const onPageHidden = () => {
+        clearTimeout(fallbackTimer);
+    };
+
+    document.addEventListener('visibilitychange', onPageHidden, { once: true });
+
+    fallbackTimer = setTimeout(() => {
+        if (document.visibilityState === 'visible' && Date.now() - start < timeout + 200) {
+            window.location.href = url;
+        }
+    }, timeout);
+
+    window.location.href = appUri;
+}
+
+playStoreLinks.forEach(link => {
+    link.addEventListener('click', e => {
+        if (!isAndroidBrowser()) return;
+
+        const href = link.getAttribute('href');
+        if (!href || href.indexOf(playStoreUrl) === -1) return;
+
+        e.preventDefault();
+        openPlayStoreApp(playStoreUrl);
+    });
+});
+
+// ============================================
 // MAGNETIC BUTTON
 // ============================================
 document.querySelectorAll('.magnetic-btn').forEach(btn => {
