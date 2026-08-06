@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date & Time Tools | Damodar Dhakal</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #050816 0%, #0f172a 100%);
+            color: #fff;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+        .date-time-page {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 70px 20px 60px;
+        }
+        .date-time-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 24px;
+            padding: 34px;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.25);
+            backdrop-filter: blur(16px);
+        }
+        .date-time-card h1 {
+            margin-bottom: 12px;
+            color: #fff;
+            font-size: 2.4rem;
+        }
+        .date-time-card p {
+            color: #cfd8e6;
+            margin-bottom: 28px;
+            line-height: 1.8;
+            max-width: 780px;
+        }
+        .tool-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        .tool-panel {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 24px;
+        }
+        .tool-panel h2 {
+            font-size: 1.2rem;
+            margin-bottom: 14px;
+            color: #e5f4ff;
+        }
+        .tool-panel label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #9fc8ff;
+        }
+        .tool-panel input,
+        .tool-panel select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.06);
+            color: #edf2ff;
+            outline: none;
+            margin-bottom: 18px;
+            transition: border-color .25s ease;
+        }
+        .tool-panel input:focus,
+        .tool-panel select:focus {
+            border-color: rgba(0,245,255,0.75);
+        }
+        .tool-panel button {
+            background: linear-gradient(135deg, #00f5ff, #ff00e5);
+            border: none;
+            color: #06101a;
+            font-weight: 700;
+            padding: 12px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: transform .2s ease, opacity .2s ease;
+        }
+        .tool-panel button:hover {
+            transform: translateY(-1px);
+        }
+        .output-box {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 18px;
+            color: #e5f9ff;
+            min-height: 80px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .world-clock-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .world-clock-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px 16px;
+        }
+        .world-clock-item span {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .world-clock-item strong {
+            color: #fff;
+        }
+        .divider {
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+            margin: 28px 0;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+        .row .tool-panel { margin-bottom: 0; }
+        @media (max-width: 900px) {
+            .tool-section, .row { grid-template-columns: 1fr; }
+        }
+        .back-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+        .back-row a { color: #00f5ff; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="date-time-page">
+        <div class="date-time-card">
+            <div class="back-row">
+                <a href="tools.html">← Back to Tools</a>
+                <span>Built for quick date/time conversions, age calculations, and world clock reference.</span>
+            </div>
+            <h1>Date & Time Toolkit</h1>
+            <p>Use this tool to convert date formats, calculate age from a birthdate, determine the day of the week, and view live date and time from major time zones around the world.</p>
+
+            <div class="tool-section">
+                <div class="tool-panel">
+                    <h2>Date Converter</h2>
+                    <label for="convert-date-input">Select a date</label>
+                    <input type="date" id="convert-date-input" />
+                    <label for="convert-date-format">Choose output format</label>
+                    <select id="convert-date-format">
+                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                        <option value="DD MMM YYYY">DD MMM YYYY</option>
+                        <option value="Long">Day, Month DD, YYYY</option>
+                    </select>
+                    <label for="convert-date-day">Day of week</label>
+                    <div class="output-box" id="convert-date-output">Choose a date to see the converted values.</div>
+                    <button type="button" id="convert-date-button">Convert Date</button>
+                </div>
+
+                <div class="tool-panel">
+                    <h2>Age Calculator</h2>
+                    <label for="age-date-input">Enter birth date</label>
+                    <input type="date" id="age-date-input" />
+                    <label for="age-result">Age result</label>
+                    <div class="output-box" id="age-output">Enter a birth date and click calculate to see age in years, months, and days.</div>
+                    <button type="button" id="age-calc-button">Calculate Age</button>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="tool-section">
+                <div class="tool-panel">
+                    <h2>Countdown & Day Finder</h2>
+                    <label for="countdown-date-input">Select a date to count down to</label>
+                    <input type="date" id="countdown-date-input" />
+                    <label for="countdown-output">Countdown</label>
+                    <div class="output-box" id="countdown-output">Pick a future date and this clock will show the remaining time.</div>
+                    <label for="weekday-date-input">Check day of week</label>
+                    <input type="date" id="weekday-date-input" />
+                    <div class="output-box" id="weekday-output">Pick a date to see the weekday and whether it falls on a leap year.</div>
+                </div>
+
+                <div class="tool-panel">
+                    <h2>World Clocks</h2>
+                    <p style="color:#a8b9ce; margin-bottom:14px;">Live local date and time for popular countries and regions with their flags.</p>
+                    <div class="world-clock-list" id="world-clocks"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const convertDateInput = document.getElementById('convert-date-input');
+        const convertDateFormat = document.getElementById('convert-date-format');
+        const convertDateOutput = document.getElementById('convert-date-output');
+        const convertDateButton = document.getElementById('convert-date-button');
+        const ageDateInput = document.getElementById('age-date-input');
+        const ageOutput = document.getElementById('age-output');
+        const ageCalcButton = document.getElementById('age-calc-button');
+        const countdownDateInput = document.getElementById('countdown-date-input');
+        const countdownOutput = document.getElementById('countdown-output');
+        const weekdayDateInput = document.getElementById('weekday-date-input');
+        const weekdayOutput = document.getElementById('weekday-output');
+        const worldClocks = document.getElementById('world-clocks');
+
+        const countries = [
+            { flag: '🇳🇵', name: 'Nepal', tz: 'Asia/Kathmandu' },
+            { flag: '🇺🇸', name: 'New York, USA', tz: 'America/New_York' },
+            { flag: '🇬🇧', name: 'London, UK', tz: 'Europe/London' },
+            { flag: '🇮🇳', name: 'India', tz: 'Asia/Kolkata' },
+            { flag: '🇯🇵', name: 'Tokyo, Japan', tz: 'Asia/Tokyo' },
+            { flag: '🇦🇺', name: 'Sydney, Australia', tz: 'Australia/Sydney' },
+            { flag: '🇩🇪', name: 'Berlin, Germany', tz: 'Europe/Berlin' },
+            { flag: '🇧🇷', name: 'Sao Paulo, Brazil', tz: 'America/Sao_Paulo' },
+            { flag: '🇿🇦', name: 'Cape Town, South Africa', tz: 'Africa/Johannesburg' },
+            { flag: '🇨🇳', name: 'Beijing, China', tz: 'Asia/Shanghai' }
+        ];
+
+        function pad(number) {
+            return String(number).padStart(2, '0');
+        }
+
+        function formatDateForOutput(date, format) {
+            const year = date.getFullYear();
+            const month = pad(date.getMonth() + 1);
+            const day = pad(date.getDate());
+            const monthName = date.toLocaleString('default', { month: 'short' });
+            const weekday = date.toLocaleString('default', { weekday: 'long' });
+            const longMonth = date.toLocaleString('default', { month: 'long' });
+
+            switch (format) {
+                case 'YYYY-MM-DD': return `${year}-${month}-${day}`;
+                case 'DD/MM/YYYY': return `${day}/${month}/${year}`;
+                case 'MM/DD/YYYY': return `${month}/${day}/${year}`;
+                case 'DD MMM YYYY': return `${day} ${monthName} ${year}`;
+                default: return `${weekday}, ${longMonth} ${day}, ${year}`;
+            }
+        }
+
+        function updateDateConverter() {
+            const value = convertDateInput.value;
+            if (!value) {
+                convertDateOutput.textContent = 'Choose a date to convert it into multiple formats.';
+                return;
+            }
+            const date = new Date(value + 'T00:00:00');
+            if (Number.isNaN(date.getTime())) {
+                convertDateOutput.textContent = 'Invalid date. Please choose a valid date from the picker.';
+                return;
+            }
+            const formatted = formatDateForOutput(date, convertDateFormat.value);
+            const weekday = date.toLocaleString('default', { weekday: 'long' });
+            const iso = date.toISOString().slice(0, 10);
+            convertDateOutput.textContent = `Converted date: ${formatted}\nISO format: ${iso}\nWeekday: ${weekday}`;
+        }
+
+        function calculateAge() {
+            const value = ageDateInput.value;
+            if (!value) {
+                ageOutput.textContent = 'Enter your birth date to calculate your age.';
+                return;
+            }
+            const birth = new Date(value + 'T00:00:00');
+            const today = new Date();
+            if (Number.isNaN(birth.getTime())) {
+                ageOutput.textContent = 'Invalid birth date. Please choose a valid date.';
+                return;
+            }
+            if (birth > today) {
+                ageOutput.textContent = 'Birth date cannot be in the future.';
+                return;
+            }
+            let years = today.getFullYear() - birth.getFullYear();
+            let months = today.getMonth() - birth.getMonth();
+            let days = today.getDate() - birth.getDate();
+            if (days < 0) {
+                months -= 1;
+                const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years -= 1;
+                months += 12;
+            }
+            ageOutput.textContent = `Age: ${years} years, ${months} months, ${days} days.`;
+        }
+
+        function updateCountdown() {
+            const value = countdownDateInput.value;
+            if (!value) {
+                countdownOutput.textContent = 'Choose a future date to see the countdown.';
+                return;
+            }
+            const target = new Date(value + 'T00:00:00');
+            const now = new Date();
+            if (Number.isNaN(target.getTime())) {
+                countdownOutput.textContent = 'Invalid date. Please choose a valid date.';
+                return;
+            }
+            if (target <= now) {
+                countdownOutput.textContent = 'The selected date has already arrived or is today.';
+                return;
+            }
+            const diff = target - now;
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            countdownOutput.textContent = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds remaining.`;
+        }
+
+        function updateWeekday() {
+            const value = weekdayDateInput.value;
+            if (!value) {
+                weekdayOutput.textContent = 'Choose a date to see its weekday and leap year status.';
+                return;
+            }
+            const date = new Date(value + 'T00:00:00');
+            if (Number.isNaN(date.getTime())) {
+                weekdayOutput.textContent = 'Invalid date. Please choose a valid date.';
+                return;
+            }
+            const weekday = date.toLocaleString('default', { weekday: 'long' });
+            const year = date.getFullYear();
+            const isLeap = new Date(year, 1, 29).getMonth() === 1;
+            weekdayOutput.textContent = `${weekday}, ${date.toLocaleDateString()}. ${year} is ${isLeap ? '' : 'not '}a leap year.`;
+        }
+
+        function updateWorldTimes() {
+            worldClocks.innerHTML = countries.map(country => {
+                const now = new Date();
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: country.tz,
+                    weekday: 'short',
+                    month: 'short',
+                    day: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                });
+                const timeString = formatter.format(now);
+                return `<div class="world-clock-item"><span><strong>${country.flag} ${country.name}</strong></span><span>${timeString}</span></div>`;
+            }).join('');
+        }
+
+        convertDateButton.addEventListener('click', updateDateConverter);
+        convertDateInput.addEventListener('change', updateDateConverter);
+        convertDateFormat.addEventListener('change', updateDateConverter);
+        ageCalcButton.addEventListener('click', calculateAge);
+        ageDateInput.addEventListener('change', calculateAge);
+        countdownDateInput.addEventListener('change', updateCountdown);
+        weekdayDateInput.addEventListener('change', updateWeekday);
+
+        setInterval(() => {
+            updateCountdown();
+            updateWorldTimes();
+        }, 1000);
+
+        updateDateConverter();
+        calculateAge();
+        updateCountdown();
+        updateWeekday();
+        updateWorldTimes();
+    </script>
+</body>
+</html>
