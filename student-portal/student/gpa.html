@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator | Student Portal — KSS</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'student',
+            pageId: 'gpa',
+            onReady: (main) => {
+                let rows = SUBJECTS_C10.map(s => {
+                    const grade = MY_GRADES.find(g => g.subjectCode === s.code);
+                    return `
+                        <tr>
+                            <td><strong>${s.name}</strong> (${s.code})</td>
+                            <td>${s.credit}</td>
+                            <td>
+                                <select class="gpa-select" data-credit="${s.credit}" onchange="calcGpa()">
+                                    <option value="4.0" ${grade && grade.gpa >= 3.9 ? 'selected' : ''}>A+ (4.0)</option>
+                                    <option value="3.6" ${grade && grade.gpa >= 3.5 && grade.gpa < 3.9 ? 'selected' : ''}>A (3.6)</option>
+                                    <option value="3.2" ${grade && grade.gpa >= 3.2 && grade.gpa < 3.5 ? 'selected' : ''}>B+ (3.2)</option>
+                                    <option value="2.8" ${grade && grade.gpa >= 2.8 && grade.gpa < 3.2 ? 'selected' : ''}>B (2.8)</option>
+                                    <option value="2.4" ${grade && grade.gpa >= 2.4 && grade.gpa < 2.8 ? 'selected' : ''}>C+ (2.4)</option>
+                                    <option value="2.0" ${grade && grade.gpa >= 2.0 && grade.gpa < 2.4 ? 'selected' : ''}>C (2.0)</option>
+                                    <option value="1.6">D (1.6)</option>
+                                    <option value="0.0">NG / F (0.0)</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>GPA Calculator</h1>
+                            <p>Interactive Grade Point Average Calculator — SEE Grading System (Nepal CDC standard)</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 fade-in" style="margin-bottom:24px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title"><i class='bx bx-calculator' style="color:var(--cyan);"></i> Select Expected Subject Grades</span>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <tr><th>Subject</th><th>Credit Hours</th><th>Grade / GPA Point</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div class="card" style="text-align:center; padding:32px;">
+                                <div style="font-size:14px; color:var(--text-muted);">Calculated Cumulative GPA</div>
+                                <div id="gpaResult" style="font-size:56px; font-weight:800; color:var(--cyan); margin:12px 0;">3.68</div>
+                                <div id="gpaRemark" style="font-weight:700; color:var(--emerald); font-size:16px;">Outstanding (A)</div>
+                                <p style="font-size:12px; color:var(--text-muted); margin-top:12px;">Based on total credit weightage: 24 Credit Hours</p>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="card-title"><i class='bx bx-info-circle' style="color:var(--gold);"></i> Grading Scale Reference</span>
+                                </div>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:12px;">
+                                    <div><strong>90% - 100%</strong> → A+ (4.0)</div>
+                                    <div><strong>80% - 89%</strong> → A (3.6)</div>
+                                    <div><strong>70% - 79%</strong> → B+ (3.2)</div>
+                                    <div><strong>60% - 69%</strong> → B (2.8)</div>
+                                    <div><strong>50% - 59%</strong> → C+ (2.4)</div>
+                                    <div><strong>40% - 49%</strong> → C (2.0)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                window.calcGpa = function() {
+                    let totalPoints = 0;
+                    let totalCredits = 0;
+                    document.querySelectorAll('.gpa-select').forEach(sel => {
+                        const c = parseFloat(sel.dataset.credit);
+                        const p = parseFloat(sel.value);
+                        totalPoints += (p * c);
+                        totalCredits += c;
+                    });
+                    const gpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+                    document.getElementById('gpaResult').textContent = gpa;
+
+                    const remark = document.getElementById('gpaRemark');
+                    if (gpa >= 3.6) { remark.textContent = 'Outstanding (A+)'; remark.style.color = 'var(--cyan)'; }
+                    else if (gpa >= 3.2) { remark.textContent = 'Excellent (A)'; remark.style.color = 'var(--emerald)'; }
+                    else if (gpa >= 2.8) { remark.textContent = 'Very Good (B+)'; remark.style.color = 'var(--gold)'; }
+                    else if (gpa >= 2.4) { remark.textContent = 'Good (B)'; remark.style.color = 'var(--amber)'; }
+                    else { remark.textContent = 'Satisfactory'; remark.style.color = 'var(--rose)'; }
+                };
+            }
+        });
+    </script>
+</body>
+</html>

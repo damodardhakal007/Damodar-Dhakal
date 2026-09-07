@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard | KSS Portal</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'teacher',
+            pageId: 'dashboard',
+            onReady: (main) => {
+                const todayKey = getTodayKey();
+                const todayClasses = TEACHER_SCHEDULE[todayKey] || [];
+                
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>Welcome, Ram Sir! 👨‍🏫</h1>
+                            <p>Faculty Portal — Department of Mathematics, Kavresthali Secondary School</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-4 fade-in" style="margin-bottom:24px;">
+                        <div class="stat-card">
+                            <div class="stat-icon icon-emerald"><i class='bx bx-chalkboard'></i></div>
+                            <div class="stat-value" id="cClasses">4</div>
+                            <div class="stat-label">Assigned Classes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-cyan"><i class='bx bx-group'></i></div>
+                            <div class="stat-value" id="cStudents">143</div>
+                            <div class="stat-label">Total Students</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-gold"><i class='bx bx-time-five'></i></div>
+                            <div class="stat-value">${todayClasses.length}</div>
+                            <div class="stat-label">Classes Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-rose"><i class='bx bx-edit'></i></div>
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Pending Grade Reviews</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 fade-in">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title"><i class='bx bx-calendar-event' style="color:var(--emerald);"></i> Today's Teaching Schedule</span>
+                                <a href="schedule.html" class="badge badge-subtle">Full Timetable</a>
+                            </div>
+                            <div class="schedule-list">
+                                ${todayClasses.length > 0 ? todayClasses.map(c => `
+                                    <div class="schedule-item">
+                                        <span class="sched-time"><i class='bx bx-time-five'></i> ${c.time}</span>
+                                        <span class="sched-name">${c.subject}</span>
+                                        <span class="sched-room">Class ${c.class} • ${c.room}</span>
+                                    </div>
+                                `).join('') : '<p style="color:var(--text-muted); padding:20px; text-align:center;">No classes scheduled today.</p>'}
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title"><i class='bx bx-rocket' style="color:var(--cyan);"></i> Faculty Quick Actions</span>
+                            </div>
+                            <div class="quick-actions-grid">
+                                <a href="attendance.html" class="quick-action-item">
+                                    <i class='bx bx-calendar-check' style="color:var(--emerald);"></i>
+                                    <span>Mark Attendance</span>
+                                </a>
+                                <a href="grades.html" class="quick-action-item">
+                                    <i class='bx bx-edit' style="color:var(--cyan);"></i>
+                                    <span>Enter Marks</span>
+                                </a>
+                                <a href="students.html" class="quick-action-item">
+                                    <i class='bx bx-group' style="color:var(--gold);"></i>
+                                    <span>Class Roster</span>
+                                </a>
+                                <a href="my-classes.html" class="quick-action-item">
+                                    <i class='bx bx-chalkboard' style="color:var(--violet);"></i>
+                                    <span>My Classes</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                animateCounter(document.getElementById('cClasses'), 4);
+                animateCounter(document.getElementById('cStudents'), 143);
+            }
+        });
+    </script>
+</body>
+</html>

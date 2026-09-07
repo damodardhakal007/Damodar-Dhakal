@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notices | Student Portal — KSS</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'student',
+            pageId: 'notices',
+            onReady: (main) => {
+                let noticeCards = NOTICES.map(n => `
+                    <div class="card notice-card fade-in" style="margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <span class="badge badge-subtle" style="text-transform:uppercase; margin-bottom:8px; display:inline-block;">${n.type}</span>
+                                <h3 style="margin-bottom:6px; font-size:16px;">${n.title}</h3>
+                            </div>
+                            <span style="font-size:12px; color:var(--text-muted);"><i class='bx bx-calendar'></i> ${n.date}</span>
+                        </div>
+                        <p style="color:var(--text-secondary); font-size:13px; margin:8px 0 12px; line-height:1.5;">${n.detail}</p>
+                        <div style="font-size:11px; color:var(--text-muted); text-align:right;">Issued by: <strong>${n.author}</strong></div>
+                    </div>
+                `).join('');
+
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>School Notices & Announcements</h1>
+                            <p>Official Bulletins from Kavresthali Secondary School Administration</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        ${noticeCards}
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

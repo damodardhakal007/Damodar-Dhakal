@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classes & Sections | Admin Portal — KSS</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'admin',
+            pageId: 'classes',
+            onReady: (main) => {
+                let rows = CLASSES.map(c => {
+                    const teacher = TEACHERS.find(t => t.id === c.classTeacher);
+                    return `
+                        <tr>
+                            <td>${c.id}</td>
+                            <td><strong>${c.name}</strong></td>
+                            <td>Section ${c.section}</td>
+                            <td><strong>${c.students} Students</strong></td>
+                            <td>${teacher ? teacher.name : 'Unassigned'}</td>
+                            <td><span class="badge badge-subtle">Building B - Floor 2</span></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>Classes & Sections Directory</h1>
+                            <p>Active Class Sections, Student Allocations & Class Teachers</p>
+                        </div>
+                    </div>
+
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <span class="card-title"><i class='bx bx-building-house' style="color:var(--gold);"></i> School Class Roster (${CLASSES.length} Sections)</span>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr><th>Class ID</th><th>Grade</th><th>Section</th><th>Enrolled Students</th><th>Class Teacher</th><th>Location</th></tr>
+                            </thead>
+                            <tbody>
+                                ${rows}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

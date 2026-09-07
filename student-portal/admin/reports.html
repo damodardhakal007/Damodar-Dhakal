@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Reports | Admin Portal — KSS</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'admin',
+            pageId: 'reports',
+            onReady: (main) => {
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>Academic Analytics & Reports</h1>
+                            <p>School-wide Attendance, Performance Breakdown & Pass Rate Statistics</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-3 fade-in" style="margin-bottom:24px;">
+                        <div class="card" style="text-align:center; padding:24px;">
+                            <div style="font-size:12px; color:var(--text-muted);">Overall Pass Percentage</div>
+                            <div style="font-size:42px; font-weight:800; color:var(--emerald); margin:8px 0;">96.8%</div>
+                            <div style="font-size:11px; color:var(--text-muted);">First Terminal Exam 2083</div>
+                        </div>
+
+                        <div class="card" style="text-align:center; padding:24px;">
+                            <div style="font-size:12px; color:var(--text-muted);">Average School GPA</div>
+                            <div style="font-size:42px; font-weight:800; color:var(--cyan); margin:8px 0;">3.42</div>
+                            <div style="font-size:11px; color:var(--text-muted);">Across Classes 6 - 10</div>
+                        </div>
+
+                        <div class="card" style="text-align:center; padding:24px;">
+                            <div style="font-size:12px; color:var(--text-muted);">Daily Attendance Rate</div>
+                            <div style="font-size:42px; font-weight:800; color:var(--gold); margin:8px 0;">94.2%</div>
+                            <div style="font-size:11px; color:var(--text-muted);">Bhadra Month Average</div>
+                        </div>
+                    </div>
+
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <span class="card-title"><i class='bx bx-line-chart' style="color:var(--gold);"></i> Class Performance Comparison</span>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr><th>Class Section</th><th>Students</th><th>Avg Attendance</th><th>Avg GPA</th><th>Top Performer</th><th>Pass Rate</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Class 10A</td><td>38</td><td>95.4%</td><td>3.62</td><td>Damodar Dhakal (GPA 3.68)</td><td><span class="badge grade-a">100%</span></td></tr>
+                                <tr><td>Class 10B</td><td>35</td><td>92.1%</td><td>3.45</td><td>Deepa Ghimire (GPA 3.75)</td><td><span class="badge grade-a">97.1%</span></td></tr>
+                                <tr><td>Class 9A</td><td>36</td><td>94.8%</td><td>3.50</td><td>Rajesh Khadka (GPA 3.60)</td><td><span class="badge grade-a">94.4%</span></td></tr>
+                                <tr><td>Class 9B</td><td>34</td><td>91.5%</td><td>3.28</td><td>Suresh Thapa (GPA 3.40)</td><td><span class="badge grade-b">91.2%</span></td></tr>
+                                <tr><td>Class 8A</td><td>34</td><td>96.0%</td><td>3.40</td><td>Aarti Paudel (GPA 3.65)</td><td><span class="badge grade-a">97.0%</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

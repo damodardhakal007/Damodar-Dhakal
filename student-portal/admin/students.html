@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students | Admin Portal — KSS</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'admin',
+            pageId: 'students',
+            onReady: (main) => {
+                let renderAdminStudentRows = (list) => {
+                    return list.map(s => {
+                        const c = CLASSES.find(x => x.id === s.classId);
+                        return `
+                            <tr>
+                                <td>${s.id}</td>
+                                <td><strong>${s.name}</strong></td>
+                                <td>Class ${c ? c.name.replace('Class ','') + ' ' + c.section : s.classId}</td>
+                                <td>${s.roll}</td>
+                                <td>${s.parent}</td>
+                                <td>${s.phone}</td>
+                                <td><span class="badge badge-subtle">${s.bloodGroup}</span></td>
+                                <td>
+                                    <button onclick="editStudent('${s.id}')" style="background:none; border:none; color:var(--cyan); cursor:pointer; font-size:16px;"><i class='bx bx-edit'></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                };
+
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>Manage Student Records</h1>
+                            <p>Master Directory — Kavresthali Secondary School Student Database</p>
+                        </div>
+                        <button onclick="toggleAddForm()" class="login-btn" style="padding:10px 20px; font-size:13px;"><i class='bx bx-user-plus'></i> Add New Student</button>
+                    </div>
+
+                    <!-- Add Student Form (hidden initially) -->
+                    <div id="addFormCard" class="card fade-in" style="display:none; margin-bottom:24px; border:1px solid var(--gold);">
+                        <div class="card-header">
+                            <span class="card-title"><i class='bx bx-user-plus' style="color:var(--gold);"></i> Add New Student Registration</span>
+                        </div>
+                        <form id="newStudentForm" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Full Name</label>
+                                <input type="text" id="stuName" required class="gpa-select" style="width:100%;">
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Class & Section</label>
+                                <select id="stuClass" class="gpa-select" style="width:100%;">
+                                    ${CLASSES.map(c => `<option value="${c.id}">${c.name} - Sec ${c.section}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Roll Number</label>
+                                <input type="number" id="stuRoll" required class="gpa-select" style="width:100%;">
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Parent / Guardian Name</label>
+                                <input type="text" id="stuParent" required class="gpa-select" style="width:100%;">
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Contact Phone</label>
+                                <input type="text" id="stuPhone" required class="gpa-select" style="width:100%;">
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Address</label>
+                                <input type="text" id="stuAddress" required class="gpa-select" style="width:100%;">
+                            </div>
+                            <div style="grid-column: span 3; display:flex; justify-content:flex-end; gap:10px;">
+                                <button type="button" onclick="toggleAddForm()" style="background:rgba(255,255,255,0.06); border:none; color:var(--text-main); padding:8px 16px; border-radius:8px; cursor:pointer;">Cancel</button>
+                                <button type="submit" class="login-btn" style="padding:8px 20px; font-size:12px;">Save Registration</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <span class="card-title"><i class='bx bx-group' style="color:var(--gold);"></i> Registered Students (<span id="adminStuCount">${STUDENTS.length}</span> Records)</span>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr><th>Student ID</th><th>Name</th><th>Class</th><th>Roll</th><th>Parent Name</th><th>Phone</th><th>Blood Group</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="adminStuBody">
+                                ${renderAdminStudentRows(STUDENTS)}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                window.toggleAddForm = function() {
+                    const card = document.getElementById('addFormCard');
+                    card.style.display = card.style.display === 'none' ? 'block' : 'none';
+                };
+
+                document.getElementById('newStudentForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const newId = `STU-10A-0${STUDENTS.length + 1}`;
+                    const newStu = {
+                        id: newId,
+                        name: document.getElementById('stuName').value,
+                        classId: document.getElementById('stuClass').value,
+                        roll: parseInt(document.getElementById('stuRoll').value),
+                        gender: 'M',
+                        phone: document.getElementById('stuPhone').value,
+                        parent: document.getElementById('stuParent').value,
+                        dob: '2010-01-01',
+                        address: document.getElementById('stuAddress').value,
+                        bloodGroup: 'O+'
+                    };
+                    STUDENTS.push(newStu);
+                    document.getElementById('adminStuBody').innerHTML = renderAdminStudentRows(STUDENTS);
+                    document.getElementById('adminStuCount').textContent = STUDENTS.length;
+                    alert(`Student ${newStu.name} successfully registered with ID ${newId}!`);
+                    toggleAddForm();
+                });
+
+                window.editStudent = function(id) {
+                    alert(`Editing details for student ${id}`);
+                };
+            }
+        });
+    </script>
+</body>
+</html>
