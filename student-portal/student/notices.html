@@ -15,7 +15,8 @@
             role: 'student',
             pageId: 'notices',
             onReady: (main) => {
-                let noticeCards = NOTICES.map(n => `
+                const currentNotices = getStoredNotices();
+                let noticeCards = currentNotices.map(n => `
                     <div class="card notice-card fade-in" style="margin-bottom:16px;">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                             <div>
@@ -33,7 +34,7 @@
                     <div class="top-header fade-in">
                         <div class="header-left">
                             <h1>School Notices & Announcements</h1>
-                            <p>Official Bulletins from Kavresthali Secondary School Administration</p>
+                            <p>Official Bulletins from Kavresthali Secondary School Administration & Teachers</p>
                         </div>
                     </div>
 

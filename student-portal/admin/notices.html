@@ -15,8 +15,13 @@
             role: 'admin',
             pageId: 'notices',
             onReady: (main) => {
+                let currentNotices = getStoredNotices();
+
                 let renderAdminNotices = () => {
-                    return NOTICES.map(n => `
+                    if (currentNotices.length === 0) {
+                        return '<div class="card" style="text-align:center; padding:32px; color:var(--text-muted);">No announcements published yet.</div>';
+                    }
+                    return currentNotices.map(n => `
                         <div class="card notice-card fade-in" style="margin-bottom:16px;">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                 <div>
@@ -25,10 +30,10 @@
                                 </div>
                                 <span style="font-size:12px; color:var(--text-muted);"><i class='bx bx-calendar'></i> ${n.date}</span>
                             </div>
-                            <p style="color:var(--text-secondary); font-size:13px; margin:8px 0 12px;">${n.detail}</p>
+                            <p style="color:var(--text-secondary); font-size:13px; margin:8px 0 12px; line-height:1.6;">${n.detail}</p>
                             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; font-size:11px; color:var(--text-muted);">
                                 <span>Author: <strong>${n.author}</strong></span>
-                                <button onclick="deleteNotice(${n.id})" style="background:none; border:none; color:var(--rose); cursor:pointer; font-size:14px;"><i class='bx bx-trash'></i> Delete Notice</button>
+                                <button onclick="deleteNotice(${n.id})" style="background:none; border:none; color:var(--rose); cursor:pointer; font-size:13px; display:inline-flex; align-items:center; gap:4px;"><i class='bx bx-trash'></i> Delete Notice</button>
                             </div>
                         </div>
                     `).join('');
@@ -50,7 +55,7 @@
                         <form id="newNoticeForm" style="display:flex; flex-direction:column; gap:14px;">
                             <div>
                                 <label style="font-size:12px; color:var(--text-muted);">Notice Title</label>
-                                <input type="text" id="nTitle" required class="gpa-select" style="width:100%;">
+                                <input type="text" id="nTitle" required class="gpa-select" style="width:100%;" placeholder="e.g. SEE Examination Centers & Guidelines">
                             </div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
                                 <div>
@@ -69,7 +74,7 @@
                             </div>
                             <div>
                                 <label style="font-size:12px; color:var(--text-muted);">Notice Detail Content</label>
-                                <textarea id="nDetail" required class="gpa-select" style="width:100%; height:80px; font-family:inherit;"></textarea>
+                                <textarea id="nDetail" required class="gpa-select" style="width:100%; height:80px; font-family:inherit;" placeholder="Enter notice details..."></textarea>
                             </div>
                             <div style="display:flex; justify-content:flex-end; gap:10px;">
                                 <button type="button" onclick="toggleNoticeForm()" style="background:rgba(255,255,255,0.06); border:none; color:var(--text-main); padding:8px 16px; border-radius:8px; cursor:pointer;">Cancel</button>
@@ -91,23 +96,25 @@
                 document.getElementById('newNoticeForm').addEventListener('submit', (e) => {
                     e.preventDefault();
                     const newN = {
-                        id: NOTICES.length + 1,
-                        title: document.getElementById('nTitle').value,
+                        id: Date.now(),
+                        title: document.getElementById('nTitle').value.trim(),
                         type: document.getElementById('nType').value,
-                        author: document.getElementById('nAuthor').value,
-                        detail: document.getElementById('nDetail').value,
+                        author: document.getElementById('nAuthor').value.trim(),
+                        detail: document.getElementById('nDetail').value.trim(),
                         date: 'Bhadra 22, 2083'
                     };
-                    NOTICES.unshift(newN);
+                    currentNotices.unshift(newN);
+                    saveNotices(currentNotices);
                     document.getElementById('noticesList').innerHTML = renderAdminNotices();
-                    alert('Notice published successfully!');
+                    alert('Notice published and synced to all Student & Parent portals!');
+                    e.target.reset();
                     toggleNoticeForm();
                 });
 
                 window.deleteNotice = function(id) {
-                    const idx = NOTICES.findIndex(n => n.id === id);
-                    if (idx !== -1) {
-                        NOTICES.splice(idx, 1);
+                    if (confirm('Are you sure you want to delete this notice?')) {
+                        currentNotices = currentNotices.filter(n => n.id !== id);
+                        saveNotices(currentNotices);
                         document.getElementById('noticesList').innerHTML = renderAdminNotices();
                     }
                 };

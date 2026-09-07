@@ -15,16 +15,20 @@
             role: 'student',
             pageId: 'subjects',
             onReady: (main) => {
-                let rows = MY_GRADES.map(g => {
+                const currentGrades = getStoredGrades().filter(g => g.studentId === 'STU-10A-007');
+                const liveGPA = calculateStudentGPA('STU-10A-007');
+
+                let rows = currentGrades.map(g => {
                     const sub = SUBJECTS_C10.find(s => s.code === g.subjectCode);
-                    const teacher = TEACHERS.find(t => t.id === sub.teacher);
+                    const teacherName = sub ? getTeacherName(sub.teacher) : 'Faculty';
+                    const credit = sub ? sub.credit : 4;
                     return `
                         <tr>
                             <td>
-                                <strong>${sub.name}</strong><br>
-                                <span style="font-size:11px; color:var(--text-muted);">${g.subjectCode} • ${sub.credit} Credits</span>
+                                <strong>${sub ? sub.name : g.subjectCode}</strong><br>
+                                <span style="font-size:11px; color:var(--text-muted);">${g.subjectCode} • ${credit} Credits</span>
                             </td>
-                            <td>${teacher ? teacher.name : 'Faculty'}</td>
+                            <td>${teacherName}</td>
                             <td>${g.internal} / ${g.internalMax}</td>
                             <td>${g.external} / ${g.externalMax}</td>
                             <td><strong>${g.total} / 100</strong></td>
@@ -43,8 +47,8 @@
 
                     <div class="card fade-in" style="margin-bottom:24px;">
                         <div class="card-header">
-                            <span class="card-title"><i class='bx bx-book-open' style="color:var(--cyan);"></i> Enrolled Courses (8 Subjects)</span>
-                            <span style="font-weight:700; color:var(--cyan);">Terminal Overall GPA: ${MY_GPA}</span>
+                            <span class="card-title"><i class='bx bx-book-open' style="color:var(--cyan);"></i> Enrolled Courses (${currentGrades.length} Subjects)</span>
+                            <span style="font-weight:700; color:var(--cyan); font-size:16px;">Terminal Overall GPA: ${liveGPA}</span>
                         </div>
                         <div style="overflow-x:auto;">
                             <table class="table">
@@ -55,7 +59,7 @@
                                         <th>Internal (40)</th>
                                         <th>External (60)</th>
                                         <th>Total (100)</th>
-                                        <th>Grade</th>
+                                        <th>Grade (GPA)</th>
                                     </tr>
                                 </thead>
                                 <tbody>

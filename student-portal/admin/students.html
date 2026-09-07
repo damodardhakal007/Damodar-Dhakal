@@ -15,20 +15,26 @@
             role: 'admin',
             pageId: 'students',
             onReady: (main) => {
+                let allStudents = getStoredStudents();
+
                 let renderAdminStudentRows = (list) => {
+                    if (list.length === 0) {
+                        return '<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-muted);">No student records found.</td></tr>';
+                    }
                     return list.map(s => {
                         const c = CLASSES.find(x => x.id === s.classId);
+                        const className = c ? `${c.name} ${c.section}` : s.classId;
                         return `
                             <tr>
-                                <td>${s.id}</td>
+                                <td><code>${s.id}</code></td>
                                 <td><strong>${s.name}</strong></td>
-                                <td>Class ${c ? c.name.replace('Class ','') + ' ' + c.section : s.classId}</td>
+                                <td>${className}</td>
                                 <td>${s.roll}</td>
                                 <td>${s.parent}</td>
                                 <td>${s.phone}</td>
-                                <td><span class="badge badge-subtle">${s.bloodGroup}</span></td>
+                                <td><span class="badge badge-subtle">${s.bloodGroup || 'O+'}</span></td>
                                 <td>
-                                    <button onclick="editStudent('${s.id}')" style="background:none; border:none; color:var(--cyan); cursor:pointer; font-size:16px;"><i class='bx bx-edit'></i></button>
+                                    <button onclick="deleteStudent('${s.id}')" style="background:none; border:none; color:var(--rose); cursor:pointer; font-size:16px;" title="Remove Student"><i class='bx bx-trash'></i></button>
                                 </td>
                             </tr>
                         `;
@@ -52,7 +58,7 @@
                         <form id="newStudentForm" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
                             <div>
                                 <label style="font-size:12px; color:var(--text-muted);">Full Name</label>
-                                <input type="text" id="stuName" required class="gpa-select" style="width:100%;">
+                                <input type="text" id="stuName" required class="gpa-select" style="width:100%;" placeholder="e.g. Binod Thapa">
                             </div>
                             <div>
                                 <label style="font-size:12px; color:var(--text-muted);">Class & Section</label>
@@ -62,19 +68,19 @@
                             </div>
                             <div>
                                 <label style="font-size:12px; color:var(--text-muted);">Roll Number</label>
-                                <input type="number" id="stuRoll" required class="gpa-select" style="width:100%;">
+                                <input type="number" id="stuRoll" required class="gpa-select" style="width:100%;" min="1" max="100">
                             </div>
                             <div>
                                 <label style="font-size:12px; color:var(--text-muted);">Parent / Guardian Name</label>
-                                <input type="text" id="stuParent" required class="gpa-select" style="width:100%;">
+                                <input type="text" id="stuParent" required class="gpa-select" style="width:100%;" placeholder="e.g. Maya Thapa">
                             </div>
                             <div>
                                 <label style="font-size:12px; color:var(--text-muted);">Contact Phone</label>
-                                <input type="text" id="stuPhone" required class="gpa-select" style="width:100%;">
+                                <input type="text" id="stuPhone" required class="gpa-select" style="width:100%;" placeholder="+977-98XXXXXXXX">
                             </div>
                             <div>
                                 <label style="font-size:12px; color:var(--text-muted);">Address</label>
-                                <input type="text" id="stuAddress" required class="gpa-select" style="width:100%;">
+                                <input type="text" id="stuAddress" required class="gpa-select" style="width:100%;" placeholder="e.g. Kavresthali, Ward 2">
                             </div>
                             <div style="grid-column: span 3; display:flex; justify-content:flex-end; gap:10px;">
                                 <button type="button" onclick="toggleAddForm()" style="background:rgba(255,255,255,0.06); border:none; color:var(--text-main); padding:8px 16px; border-radius:8px; cursor:pointer;">Cancel</button>
@@ -83,16 +89,27 @@
                         </form>
                     </div>
 
+                    <div class="card fade-in" style="margin-bottom:20px; display:flex; gap:16px; align-items:center;">
+                        <div style="flex:1; position:relative;">
+                            <input type="text" id="adminSearchInput" placeholder="Search student by name, ID or parent..." class="gpa-select" style="width:100%; padding-left:36px;">
+                            <i class='bx bx-search' style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
+                        </div>
+                        <select id="adminClassFilter" class="gpa-select" style="width:160px;">
+                            <option value="ALL">All Classes</option>
+                            ${CLASSES.map(c => `<option value="${c.id}">${c.name} ${c.section}</option>`).join('')}
+                        </select>
+                    </div>
+
                     <div class="card fade-in">
                         <div class="card-header">
-                            <span class="card-title"><i class='bx bx-group' style="color:var(--gold);"></i> Registered Students (<span id="adminStuCount">${STUDENTS.length}</span> Records)</span>
+                            <span class="card-title"><i class='bx bx-group' style="color:var(--gold);"></i> Registered Students (<span id="adminStuCount">${allStudents.length}</span> Records)</span>
                         </div>
                         <table class="table">
                             <thead>
                                 <tr><th>Student ID</th><th>Name</th><th>Class</th><th>Roll</th><th>Parent Name</th><th>Phone</th><th>Blood Group</th><th>Action</th></tr>
                             </thead>
                             <tbody id="adminStuBody">
-                                ${renderAdminStudentRows(STUDENTS)}
+                                ${renderAdminStudentRows(allStudents)}
                             </tbody>
                         </table>
                     </div>
@@ -103,30 +120,54 @@
                     card.style.display = card.style.display === 'none' ? 'block' : 'none';
                 };
 
+                function applyFilter() {
+                    const q = document.getElementById('adminSearchInput').value.toLowerCase().trim();
+                    const cls = document.getElementById('adminClassFilter').value;
+                    const filtered = allStudents.filter(s => {
+                        const matchQ = s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q) || (s.parent && s.parent.toLowerCase().includes(q));
+                        const matchC = cls === 'ALL' || s.classId === cls;
+                        return matchQ && matchC;
+                    });
+                    document.getElementById('adminStuBody').innerHTML = renderAdminStudentRows(filtered);
+                    document.getElementById('adminStuCount').textContent = filtered.length;
+                }
+
+                document.getElementById('adminSearchInput').addEventListener('input', applyFilter);
+                document.getElementById('adminClassFilter').addEventListener('change', applyFilter);
+
                 document.getElementById('newStudentForm').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const newId = `STU-10A-0${STUDENTS.length + 1}`;
+                    const clsVal = document.getElementById('stuClass').value;
+                    const rollVal = parseInt(document.getElementById('stuRoll').value);
+                    const newId = `STU-${clsVal.replace('C','')}-${rollVal < 10 ? '00' + rollVal : '0' + rollVal}`;
+                    
                     const newStu = {
                         id: newId,
-                        name: document.getElementById('stuName').value,
-                        classId: document.getElementById('stuClass').value,
-                        roll: parseInt(document.getElementById('stuRoll').value),
+                        name: document.getElementById('stuName').value.trim(),
+                        classId: clsVal,
+                        roll: rollVal,
                         gender: 'M',
-                        phone: document.getElementById('stuPhone').value,
-                        parent: document.getElementById('stuParent').value,
+                        phone: document.getElementById('stuPhone').value.trim(),
+                        parent: document.getElementById('stuParent').value.trim(),
                         dob: '2010-01-01',
-                        address: document.getElementById('stuAddress').value,
+                        address: document.getElementById('stuAddress').value.trim(),
                         bloodGroup: 'O+'
                     };
-                    STUDENTS.push(newStu);
-                    document.getElementById('adminStuBody').innerHTML = renderAdminStudentRows(STUDENTS);
-                    document.getElementById('adminStuCount').textContent = STUDENTS.length;
-                    alert(`Student ${newStu.name} successfully registered with ID ${newId}!`);
+
+                    allStudents.push(newStu);
+                    saveStudents(allStudents);
+                    applyFilter();
+                    alert(`Student "${newStu.name}" successfully registered with ID ${newId}!`);
+                    e.target.reset();
                     toggleAddForm();
                 });
 
-                window.editStudent = function(id) {
-                    alert(`Editing details for student ${id}`);
+                window.deleteStudent = function(id) {
+                    if (confirm(`Are you sure you want to remove student with ID ${id}?`)) {
+                        allStudents = allStudents.filter(s => s.id !== id);
+                        saveStudents(allStudents);
+                        applyFilter();
+                    }
                 };
             }
         });

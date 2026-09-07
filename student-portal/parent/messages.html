@@ -15,7 +15,9 @@
             role: 'parent',
             pageId: 'messages',
             onReady: (main) => {
-                let msgCards = PARENT_MESSAGES.map(m => `
+                const currentMessages = getStoredMessages();
+
+                let msgCards = currentMessages.map(m => `
                     <div class="card notice-card fade-in" style="margin-bottom:16px;">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div style="font-weight:700; color:var(--violet); font-size:15px;"><i class='bx bx-user-voice'></i> ${m.from}</div>

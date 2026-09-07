@@ -150,25 +150,25 @@
         </div>
 
         <div class="role-grid">
-            <a href="student/dashboard.html" class="role-card">
+            <a href="student/dashboard.html" class="role-card" onclick="selectRole('student')">
                 <div class="role-card-icon"><i class='bx bxs-graduation'></i></div>
                 <h3>Student</h3>
                 <p>View grades, attendance, schedule, and academic progress.</p>
                 <div class="demo-cred">User: <span>student</span> / Pass: <span>1234</span></div>
             </a>
-            <a href="teacher/dashboard.html" class="role-card">
+            <a href="teacher/dashboard.html" class="role-card" onclick="selectRole('teacher')">
                 <div class="role-card-icon"><i class='bx bxs-chalkboard'></i></div>
                 <h3>Teacher</h3>
                 <p>Manage classes, mark attendance, and enter student grades.</p>
                 <div class="demo-cred">User: <span>teacher</span> / Pass: <span>1234</span></div>
             </a>
-            <a href="admin/dashboard.html" class="role-card">
+            <a href="admin/dashboard.html" class="role-card" onclick="selectRole('admin')">
                 <div class="role-card-icon"><i class='bx bxs-shield-alt-2'></i></div>
                 <h3>Administrator</h3>
                 <p>Manage students, teachers, classes, reports, and notices.</p>
                 <div class="demo-cred">User: <span>admin</span> / Pass: <span>1234</span></div>
             </a>
-            <a href="parent/dashboard.html" class="role-card">
+            <a href="parent/dashboard.html" class="role-card" onclick="selectRole('parent')">
                 <div class="role-card-icon"><i class='bx bxs-group'></i></div>
                 <h3>Parent</h3>
                 <p>Track your child's grades, attendance, and school messages.</p>
@@ -178,5 +178,19 @@
 
         <a href="../index.html" class="back-link"><i class='bx bx-arrow-back'></i> Back to Damodar's Portfolio</a>
     </div>
+
+    <script>
+        function selectRole(role) {
+            const users = {
+                student: { username: 'student', password: '1234', role: 'student', name: 'Damodar Dhakal', id: 'STU-10A-007' },
+                teacher: { username: 'teacher', password: '1234', role: 'teacher', name: 'Ram Bahadur Sharma', id: 'TCH-001' },
+                admin:   { username: 'admin',   password: '1234', role: 'admin',   name: 'Bishnu Prasad Gautam', id: 'ADM-001' },
+                parent:  { username: 'parent',  password: '1234', role: 'parent',  name: 'Krishna Dhakal', id: 'PAR-007', childId: 'STU-10A-007' },
+            };
+            sessionStorage.setItem('portal_role', role);
+            sessionStorage.setItem('portal_logged_in', 'true');
+            sessionStorage.setItem('portal_user', JSON.stringify(users[role]));
+        }
+    </script>
 </body>
 </html>

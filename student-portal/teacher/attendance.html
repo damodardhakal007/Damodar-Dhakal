@@ -15,33 +15,40 @@
             role: 'teacher',
             pageId: 'attendance',
             onReady: (main) => {
-                const class10AStudents = STUDENTS.filter(s => s.classId === 'C10A');
-                let rows = class10AStudents.map((s, idx) => `
-                    <tr>
-                        <td>${s.roll}</td>
-                        <td><strong>${s.name}</strong></td>
-                        <td>${s.id}</td>
-                        <td>
-                            <div style="display:flex; gap:10px;">
-                                <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">
-                                    <input type="radio" name="att_${s.id}" value="P" checked> <span class="attendance-tag bg-present">Present</span>
-                                </label>
-                                <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">
-                                    <input type="radio" name="att_${s.id}" value="A"> <span class="attendance-tag bg-absent">Absent</span>
-                                </label>
-                                <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">
-                                    <input type="radio" name="att_${s.id}" value="L"> <span class="attendance-tag bg-late">Late</span>
-                                </label>
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
+                const allStudents = getStoredStudents();
+
+                function getRowsForClass(classId) {
+                    const filtered = allStudents.filter(s => s.classId === classId);
+                    if (filtered.length === 0) {
+                        return '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">No students enrolled in this section.</td></tr>';
+                    }
+                    return filtered.map((s, idx) => `
+                        <tr>
+                            <td>${s.roll}</td>
+                            <td><strong>${s.name}</strong></td>
+                            <td><code>${s.id}</code></td>
+                            <td>
+                                <div style="display:flex; gap:10px;">
+                                    <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">
+                                        <input type="radio" name="att_${s.id}" value="P" checked> <span class="attendance-tag bg-present">Present</span>
+                                    </label>
+                                    <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">
+                                        <input type="radio" name="att_${s.id}" value="A"> <span class="attendance-tag bg-absent">Absent</span>
+                                    </label>
+                                    <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">
+                                        <input type="radio" name="att_${s.id}" value="L"> <span class="attendance-tag bg-late">Late</span>
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
 
                 main.innerHTML = `
                     <div class="top-header fade-in">
                         <div class="header-left">
                             <h1>Mark Daily Attendance</h1>
-                            <p>Select class, pick date, and mark student presence</p>
+                            <p>Select class section, pick date, and record student attendance</p>
                         </div>
                     </div>
 
@@ -49,38 +56,51 @@
                         <div>
                             <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Select Class</label>
                             <select id="classSelect" class="gpa-select" style="width:160px;">
-                                <option value="C10A" selected>Class 10 - Sec A</option>
-                                <option value="C10B">Class 10 - Sec B</option>
-                                <option value="C9A">Class 9 - Sec A</option>
-                                <option value="C9B">Class 9 - Sec B</option>
+                                ${CLASSES.map(c => `<option value="${c.id}" ${c.id === 'C10A' ? 'selected' : ''}>${c.name} - Sec ${c.section}</option>`).join('')}
                             </select>
                         </div>
                         <div>
                             <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Date</label>
-                            <input type="date" value="${new Date().toISOString().split('T')[0]}" class="gpa-select" style="width:170px;">
+                            <input type="date" id="attDate" value="${new Date().toISOString().split('T')[0]}" class="gpa-select" style="width:170px;">
                         </div>
                         <div style="margin-left:auto;">
-                            <button onclick="saveAttendance()" class="login-btn" style="padding:10px 24px; font-size:13px;"><i class='bx bx-check-circle'></i> Submit Attendance</button>
+                            <button onclick="saveAttendanceRecord()" class="login-btn" style="padding:10px 24px; font-size:13px;"><i class='bx bx-check-circle'></i> Save Attendance Sheet</button>
                         </div>
                     </div>
 
                     <div class="card fade-in">
                         <div class="card-header">
-                            <span class="card-title"><i class='bx bx-group' style="color:var(--emerald);"></i> Class 10A Student Roster (${class10AStudents.length} Students)</span>
+                            <span class="card-title" id="rosterTitle"><i class='bx bx-group' style="color:var(--emerald);"></i> Class Roster</span>
                         </div>
                         <table class="table">
                             <thead>
                                 <tr><th>Roll</th><th>Student Name</th><th>Student ID</th><th>Attendance Status</th></tr>
                             </thead>
-                            <tbody>
-                                ${rows}
+                            <tbody id="attTableBody">
+                                ${getRowsForClass('C10A')}
                             </tbody>
                         </table>
                     </div>
                 `;
 
-                window.saveAttendance = function() {
-                    alert('Attendance marked and recorded successfully for Class 10A!');
+                const sel = document.getElementById('classSelect');
+                const tbody = document.getElementById('attTableBody');
+                const title = document.getElementById('rosterTitle');
+
+                function updateClass() {
+                    const selectedC = CLASSES.find(c => c.id === sel.value);
+                    const name = selectedC ? `${selectedC.name} Sec ${selectedC.section}` : sel.value;
+                    title.innerHTML = `<i class='bx bx-group' style="color:var(--emerald);"></i> ${name} Student Roster`;
+                    tbody.innerHTML = getRowsForClass(sel.value);
+                }
+
+                sel.addEventListener('change', updateClass);
+                updateClass();
+
+                window.saveAttendanceRecord = function() {
+                    const selVal = sel.value;
+                    const dateVal = document.getElementById('attDate').value;
+                    alert(`Attendance record for ${selVal} on ${dateVal} saved and updated in system!`);
                 };
             }
         });

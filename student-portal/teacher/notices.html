@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Notice | Teacher Portal — KSS</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'teacher',
+            pageId: 'notices',
+            onReady: (main) => {
+                let renderTeacherNotices = () => {
+                    const currentNotices = getStoredNotices();
+                    return currentNotices.map(n => `
+                        <div class="card notice-card fade-in" style="margin-bottom:16px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div>
+                                    <span class="badge badge-subtle" style="text-transform:uppercase; margin-bottom:8px; display:inline-block;">${n.type}</span>
+                                    <h3 style="margin-bottom:6px; font-size:16px;">${n.title}</h3>
+                                </div>
+                                <span style="font-size:12px; color:var(--text-muted);"><i class='bx bx-calendar'></i> ${n.date}</span>
+                            </div>
+                            <p style="color:var(--text-secondary); font-size:13px; margin:8px 0 12px;">${n.detail}</p>
+                            <div style="font-size:11px; color:var(--text-muted);">Author: <strong>${n.author}</strong></div>
+                        </div>
+                    `).join('');
+                };
+
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>Post Class Notice & Announcement</h1>
+                            <p>Publish announcements directly to Student and Parent Portals</p>
+                        </div>
+                        <button onclick="toggleTeacherNoticeForm()" class="login-btn" style="padding:10px 20px; font-size:13px;"><i class='bx bx-plus-circle'></i> Post New Notice</button>
+                    </div>
+
+                    <div id="teacherNoticeCard" class="card fade-in" style="display:none; margin-bottom:24px; border:1px solid var(--emerald);">
+                        <div class="card-header">
+                            <span class="card-title"><i class='bx bx-plus-circle' style="color:var(--emerald);"></i> Post Class Notice</span>
+                        </div>
+                        <form id="teacherNoticeForm" style="display:flex; flex-direction:column; gap:14px;">
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Notice Title</label>
+                                <input type="text" id="tnTitle" required class="gpa-select" style="width:100%;">
+                            </div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                                <div>
+                                    <label style="font-size:12px; color:var(--text-muted);">Category / Type</label>
+                                    <select id="tnType" class="gpa-select" style="width:100%;">
+                                        <option value="exam">Examination / Homework</option>
+                                        <option value="event">Class Event</option>
+                                        <option value="general" selected>General Notice</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size:12px; color:var(--text-muted);">Author Teacher</label>
+                                    <input type="text" id="tnAuthor" value="Ram Bahadur Sharma (Math Dept)" required class="gpa-select" style="width:100%;">
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Notice Details</label>
+                                <textarea id="tnDetail" required class="gpa-select" style="width:100%; height:80px; font-family:inherit;"></textarea>
+                            </div>
+                            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                                <button type="button" onclick="toggleTeacherNoticeForm()" style="background:rgba(255,255,255,0.06); border:none; color:var(--text-main); padding:8px 16px; border-radius:8px; cursor:pointer;">Cancel</button>
+                                <button type="submit" class="login-btn" style="padding:8px 20px; font-size:12px;">Publish to Student & Parent Portals</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="teacherNoticesList">
+                        ${renderTeacherNotices()}
+                    </div>
+                `;
+
+                window.toggleTeacherNoticeForm = function() {
+                    const c = document.getElementById('teacherNoticeCard');
+                    c.style.display = c.style.display === 'none' ? 'block' : 'none';
+                };
+
+                document.getElementById('teacherNoticeForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const allNotices = getStoredNotices();
+                    const newN = {
+                        id: allNotices.length + 1,
+                        title: document.getElementById('tnTitle').value,
+                        type: document.getElementById('tnType').value,
+                        author: document.getElementById('tnAuthor').value,
+                        detail: document.getElementById('tnDetail').value,
+                        date: 'Bhadra 22, 2083'
+                    };
+                    allNotices.unshift(newN);
+                    saveNotices(allNotices);
+                    document.getElementById('teacherNoticesList').innerHTML = renderTeacherNotices();
+                    alert('Notice published! It is now visible to all Students and Parents.');
+                    toggleTeacherNoticeForm();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

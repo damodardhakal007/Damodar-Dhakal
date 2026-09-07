@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enter Grades | Teacher Portal — KSS</title>
+    <title>Enter Grades & GPA | Teacher Portal — KSS</title>
     <link rel="stylesheet" href="../portal.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
@@ -15,25 +15,41 @@
             role: 'teacher',
             pageId: 'grades',
             onReady: (main) => {
-                const class10AStudents = STUDENTS.filter(s => s.classId === 'C10A');
+                const currentStudents = getStoredStudents();
+                const class10AStudents = currentStudents.filter(s => s.classId === 'C10A');
+                const allGrades = getStoredGrades();
+
                 let rows = class10AStudents.map((s, idx) => {
-                    const isDamodar = s.id === 'STU-10A-007';
-                    const int = isDamodar ? 38 : Math.floor(30 + Math.random() * 9);
-                    const ext = isDamodar ? 52 : Math.floor(40 + Math.random() * 18);
-                    const total = int + ext;
-                    let grade = 'A';
-                    if (total >= 90) grade = 'A+';
-                    else if (total >= 80) grade = 'A';
-                    else if (total >= 70) grade = 'B+';
-                    else if (total >= 60) grade = 'B';
+                    const existingGrade = allGrades.find(g => g.studentId === s.id && g.subjectCode === 'MATH-10');
+                    const intVal = existingGrade ? existingGrade.internal : 38;
+                    const extVal = existingGrade ? existingGrade.external : 52;
+                    const total = intVal + extVal;
+                    let gpaVal = 4.0;
+                    let letterGrade = 'A+';
+                    if (total >= 90) { letterGrade = 'A+'; gpaVal = 4.0; }
+                    else if (total >= 80) { letterGrade = 'A'; gpaVal = 3.6; }
+                    else if (total >= 70) { letterGrade = 'B+'; gpaVal = 3.2; }
+                    else if (total >= 60) { letterGrade = 'B'; gpaVal = 2.8; }
+                    else if (total >= 50) { letterGrade = 'C+'; gpaVal = 2.4; }
+                    else { letterGrade = 'C'; gpaVal = 2.0; }
+
                     return `
-                        <tr>
+                        <tr data-stu-id="${s.id}">
                             <td>${s.roll}</td>
-                            <td><strong>${s.name}</strong></td>
-                            <td><input type="number" value="${int}" max="40" min="0" class="gpa-select" style="width:70px; text-align:center;"> / 40</td>
-                            <td><input type="number" value="${ext}" max="60" min="0" class="gpa-select" style="width:70px; text-align:center;"> / 60</td>
-                            <td><strong>${total} / 100</strong></td>
-                            <td><span class="badge ${total >= 80 ? 'grade-a' : 'grade-b'}">${grade}</span></td>
+                            <td>
+                                <strong>${s.name}</strong><br>
+                                <span style="font-size:11px; color:var(--text-muted);">${s.id}</span>
+                            </td>
+                            <td>
+                                <input type="number" value="${intVal}" max="40" min="0" class="gpa-select mark-int" style="width:70px; text-align:center;"> / 40
+                            </td>
+                            <td>
+                                <input type="number" value="${extVal}" max="60" min="0" class="gpa-select mark-ext" style="width:70px; text-align:center;"> / 60
+                            </td>
+                            <td><strong class="mark-total">${total} / 100</strong></td>
+                            <td>
+                                <span class="badge ${total >= 80 ? 'grade-a' : 'grade-b'} mark-badge">${letterGrade} (${gpaVal})</span>
+                            </td>
                         </tr>
                     `;
                 }).join('');
@@ -41,8 +57,8 @@
                 main.innerHTML = `
                     <div class="top-header fade-in">
                         <div class="header-left">
-                            <h1>Grade & Mark Entry Sheet</h1>
-                            <p>First Terminal Examination 2083 — Subject: Mathematics</p>
+                            <h1>Grade & GPA Entry System</h1>
+                            <p>First Terminal Examination 2083 — Enter marks for Student Profile sync</p>
                         </div>
                     </div>
 
@@ -57,9 +73,11 @@
                         </div>
                         <div>
                             <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Subject</label>
-                            <select class="gpa-select" style="width:180px;">
+                            <select id="subjectSelect" class="gpa-select" style="width:180px;">
                                 <option value="MATH-10" selected>Mathematics (MATH-10)</option>
-                                <option value="OPTM-10">Opt. Mathematics</option>
+                                <option value="SCI-10">Science (SCI-10)</option>
+                                <option value="ENG-10">English (ENG-10)</option>
+                                <option value="NEP-10">Nepali (NEP-10)</option>
                             </select>
                         </div>
                         <div>
@@ -71,27 +89,93 @@
                             </select>
                         </div>
                         <div style="margin-left:auto;">
-                            <button onclick="saveGrades()" class="login-btn" style="padding:10px 24px; font-size:13px;"><i class='bx bx-save'></i> Save Marks</button>
+                            <button onclick="saveAllGrades()" class="login-btn" style="padding:10px 24px; font-size:13px;"><i class='bx bx-save'></i> Publish Grades to Student Profiles</button>
                         </div>
                     </div>
 
                     <div class="card fade-in">
                         <div class="card-header">
-                            <span class="card-title"><i class='bx bx-edit' style="color:var(--cyan);"></i> Marks Roster — Class 10A Mathematics</span>
+                            <span class="card-title"><i class='bx bx-edit' style="color:var(--cyan);"></i> Marks & GPA Roster — Class 10A</span>
                         </div>
                         <table class="table">
                             <thead>
-                                <tr><th>Roll</th><th>Student Name</th><th>Internal Mark (40)</th><th>External Mark (60)</th><th>Total (100)</th><th>Grade</th></tr>
+                                <tr><th>Roll</th><th>Student Name</th><th>Internal Mark (40)</th><th>External Mark (60)</th><th>Total (100)</th><th>Grade (GPA)</th></tr>
                             </thead>
-                            <tbody>
+                            <tbody id="gradeTableBody">
                                 ${rows}
                             </tbody>
                         </table>
                     </div>
                 `;
 
-                window.saveGrades = function() {
-                    alert('Grades saved and published successfully for Class 10A Mathematics!');
+                // Recalculate badge dynamically when inputs change
+                document.querySelectorAll('#gradeTableBody tr').forEach(tr => {
+                    const intInput = tr.querySelector('.mark-int');
+                    const extInput = tr.querySelector('.mark-ext');
+                    const totalSpan = tr.querySelector('.mark-total');
+                    const badgeSpan = tr.querySelector('.mark-badge');
+
+                    function updateRow() {
+                        const iVal = parseInt(intInput.value) || 0;
+                        const eVal = parseInt(extInput.value) || 0;
+                        const tot = iVal + eVal;
+                        totalSpan.textContent = `${tot} / 100`;
+                        let gpa = 4.0, letter = 'A+';
+                        if (tot >= 90) { letter = 'A+'; gpa = 4.0; }
+                        else if (tot >= 80) { letter = 'A'; gpa = 3.6; }
+                        else if (tot >= 70) { letter = 'B+'; gpa = 3.2; }
+                        else if (tot >= 60) { letter = 'B'; gpa = 2.8; }
+                        else if (tot >= 50) { letter = 'C+'; gpa = 2.4; }
+                        else { letter = 'C'; gpa = 2.0; }
+
+                        badgeSpan.textContent = `${letter} (${gpa})`;
+                        badgeSpan.className = `badge ${tot >= 80 ? 'grade-a' : 'grade-b'} mark-badge`;
+                    }
+                    intInput.addEventListener('input', updateRow);
+                    extInput.addEventListener('input', updateRow);
+                });
+
+                window.saveAllGrades = function() {
+                    const subjectCode = document.getElementById('subjectSelect').value;
+                    const allGrades = getStoredGrades();
+
+                    document.querySelectorAll('#gradeTableBody tr').forEach(tr => {
+                        const stuId = tr.dataset.stuId;
+                        const iVal = parseInt(tr.querySelector('.mark-int').value) || 0;
+                        const eVal = parseInt(tr.querySelector('.mark-ext').value) || 0;
+                        const tot = iVal + eVal;
+
+                        let gpa = 4.0, letter = 'A+';
+                        if (tot >= 90) { letter = 'A+'; gpa = 4.0; }
+                        else if (tot >= 80) { letter = 'A'; gpa = 3.6; }
+                        else if (tot >= 70) { letter = 'B+'; gpa = 3.2; }
+                        else if (tot >= 60) { letter = 'B'; gpa = 2.8; }
+                        else if (tot >= 50) { letter = 'C+'; gpa = 2.4; }
+                        else { letter = 'C'; gpa = 2.0; }
+
+                        const idx = allGrades.findIndex(g => g.studentId === stuId && g.subjectCode === subjectCode);
+                        const newGradeObj = {
+                            studentId: stuId,
+                            subjectCode: subjectCode,
+                            internal: iVal,
+                            internalMax: 40,
+                            external: eVal,
+                            externalMax: 60,
+                            total: tot,
+                            grade: letter,
+                            gpa: gpa,
+                            gradeClass: tot >= 80 ? 'grade-a' : 'grade-b'
+                        };
+
+                        if (idx !== -1) {
+                            allGrades[idx] = newGradeObj;
+                        } else {
+                            allGrades.push(newGradeObj);
+                        }
+                    });
+
+                    saveGrades(allGrades);
+                    alert(`Grades & GPA successfully published! Damodar and all students can now view updated GPA in their profiles.`);
                 };
             }
         });

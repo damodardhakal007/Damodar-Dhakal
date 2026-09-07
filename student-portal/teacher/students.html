@@ -15,18 +15,24 @@
             role: 'teacher',
             pageId: 'students',
             onReady: (main) => {
+                const currentStudents = getStoredStudents();
+
                 let renderStudentRows = (list) => {
+                    if (list.length === 0) {
+                        return '<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">No student records found.</td></tr>';
+                    }
                     return list.map(s => {
                         const c = CLASSES.find(x => x.id === s.classId);
+                        const className = c ? `${c.name} ${c.section}` : s.classId;
                         return `
                             <tr>
-                                <td>${s.id}</td>
+                                <td><code>${s.id}</code></td>
                                 <td><strong>${s.name}</strong></td>
-                                <td>Class ${c.name.replace('Class ','')} ${c.section}</td>
+                                <td>${className}</td>
                                 <td>${s.roll}</td>
-                                <td>${s.parent}</td>
-                                <td>${s.phone}</td>
-                                <td><span class="badge badge-subtle">${s.address}</span></td>
+                                <td>${s.parent || '—'}</td>
+                                <td>${s.phone || '—'}</td>
+                                <td><span class="badge badge-subtle">${s.address || 'Kathmandu'}</span></td>
                             </tr>
                         `;
                     }).join('');
@@ -47,22 +53,20 @@
                         </div>
                         <select id="classFilter" class="gpa-select" style="width:160px;">
                             <option value="ALL">All Classes</option>
-                            <option value="C10A">Class 10A</option>
-                            <option value="C10B">Class 10B</option>
-                            <option value="C9A">Class 9A</option>
+                            ${CLASSES.map(c => `<option value="${c.id}">${c.name} ${c.section}</option>`).join('')}
                         </select>
                     </div>
 
                     <div class="card fade-in">
                         <div class="card-header">
-                            <span class="card-title"><i class='bx bx-group' style="color:var(--emerald);"></i> Student Roster (<span id="stuCount">${STUDENTS.length}</span> Records)</span>
+                            <span class="card-title"><i class='bx bx-group' style="color:var(--emerald);"></i> Student Roster (<span id="stuCount">${currentStudents.length}</span> Records)</span>
                         </div>
                         <table class="table">
                             <thead>
                                 <tr><th>Student ID</th><th>Name</th><th>Class</th><th>Roll</th><th>Parent / Guardian</th><th>Phone</th><th>Address</th></tr>
                             </thead>
                             <tbody id="studentTableBody">
-                                ${renderStudentRows(STUDENTS)}
+                                ${renderStudentRows(currentStudents)}
                             </tbody>
                         </table>
                     </div>
@@ -74,10 +78,10 @@
                 const countSpan = document.getElementById('stuCount');
 
                 function filterData() {
-                    const query = searchInput.value.toLowerCase();
+                    const query = searchInput.value.toLowerCase().trim();
                     const cls = classFilter.value;
-                    const filtered = STUDENTS.filter(s => {
-                        const matchQuery = s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query) || s.parent.toLowerCase().includes(query);
+                    const filtered = currentStudents.filter(s => {
+                        const matchQuery = s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query) || (s.parent && s.parent.toLowerCase().includes(query));
                         const matchClass = cls === 'ALL' || s.classId === cls;
                         return matchQuery && matchClass;
                     });
