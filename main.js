@@ -20,7 +20,7 @@ if (imgBox) {
 window.addEventListener('load', () => {
     const preloader   = document.getElementById('preloader');
     const preloaderText = document.getElementById('preloader-text');
-    const loaderRing  = preloader.querySelector('.loader-ring');
+    const loaderRing  = preloader ? preloader.querySelector('.loader-ring') : null;
     const fullText    = "Damodar Dhakal";
     let index = 1;
 
@@ -713,7 +713,7 @@ playStoreLinks.forEach(link => {
         if (!isAndroidBrowser()) return;
 
         const href = link.getAttribute('href');
-        if (!href || href.indexOf(playStoreUrl) === -1) return;
+        if (!href || href.indexOf('com.damodardhakal.damodardhakal') === -1) return;
 
         e.preventDefault();
         openPlayStoreApp(playStoreUrl);

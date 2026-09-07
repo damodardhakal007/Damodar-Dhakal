@@ -521,7 +521,7 @@ body.custom-cursor {
 .heading span {
     /* override transparent fill for the <span> used in older markup */
     -webkit-text-fill-color: transparent;
-    color: var(--cyan);
+    color: transparent;
 }
 
 /* ══════════════════════════════════════
