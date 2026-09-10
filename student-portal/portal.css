@@ -13,13 +13,72 @@
     --violet:    #c084fc;
     --sapphire:  #60a5fa;
     --rose:      #fb7185;
+    --amber:     #f59e0b;
     --bg-dark:   #06101a;
     --bg-darker: #040d14;
     --bg-section:#081525;
     --text-light:#f0f0f0;
     --text-muted:#a0b0c0;
+    --text-main: #f0f0f0;
+    --text-secondary: #c5d5e5;
     --sidebar-w: 240px;
 }
+
+/* ─── LIGHT THEME ─── */
+[data-theme="light"] {
+    --bg-dark:    #f0f4f8;
+    --bg-darker:  #e2e8f0;
+    --bg-section: #ffffff;
+    --text-light: #1a202c;
+    --text-muted: #64748b;
+    --text-main:  #1a202c;
+    --text-secondary: #334155;
+    --cyan:       #0891b2;
+    --emerald:    #059669;
+    --gold:       #d97706;
+    --violet:     #7c3aed;
+    --rose:       #e11d48;
+    --magenta:    #c026d3;
+    --amber:      #d97706;
+}
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #e8f4f8 0%, #dbeafe 50%, #ede9fe 100%);
+    color: var(--text-main);
+}
+[data-theme="light"] .portal-sidebar {
+    background: rgba(255,255,255,0.95);
+    border-right: 1px solid rgba(0,0,0,0.1);
+}
+[data-theme="light"] .portal-sidebar a { color: #334155; }
+[data-theme="light"] .portal-sidebar a:hover,
+[data-theme="light"] .portal-sidebar a.active { background: rgba(8,145,178,0.1); color: var(--cyan); }
+[data-theme="light"] .portal-main { background: transparent; }
+[data-theme="light"] .card {
+    background: rgba(255,255,255,0.9);
+    border-color: rgba(0,0,0,0.08);
+    color: #1a202c;
+}
+[data-theme="light"] .stat-card { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .stat-value { color: #1a202c; }
+[data-theme="light"] .stat-label { color: #64748b; }
+[data-theme="light"] .login-card { background: rgba(255,255,255,0.95); border-color: rgba(0,0,0,0.1); color: #1a202c; }
+[data-theme="light"] .login-card h2 { color: #1a202c; }
+[data-theme="light"] .login-card p { color: #64748b; }
+[data-theme="light"] .login-field input { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: #1a202c; }
+[data-theme="light"] .gpa-select { background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.12); color: #1a202c; }
+[data-theme="light"] .table thead tr { background: rgba(0,0,0,0.04); }
+[data-theme="light"] .table tbody tr:hover { background: rgba(0,0,0,0.03); }
+[data-theme="light"] .table td, [data-theme="light"] .table th { border-color: rgba(0,0,0,0.08); color: #334155; }
+[data-theme="light"] .schedule-item { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .notice-item { border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .notice-card { color: #1a202c; }
+[data-theme="light"] .portal-bg-blob { opacity: 0.06; }
+[data-theme="light"] .sidebar-toggle { background: rgba(255,255,255,0.9); color: #334155; border: 1px solid rgba(0,0,0,0.1); }
+[data-theme="light"] code { background: rgba(0,0,0,0.06); color: #0891b2; }
+[data-theme="light"] .card-header { border-color: rgba(0,0,0,0.06); }
+[data-theme="light"] .top-header h1 { color: #1a202c; }
+[data-theme="light"] .top-header p { color: #64748b; }
+[data-theme="light"] .badge.badge-subtle { background: rgba(0,0,0,0.06); color: #334155; }
 
 * {
     margin: 0;
@@ -940,5 +999,215 @@ body {
     60% { transform: translateX(-6px); }
     80% { transform: translateX(6px); }
 }
-</style>
-<parameter name="Description">Shared CSS for all Student Portal pages — includes layout, sidebar, cards, tables, badges, attendance ring, schedule, GPA bars, notices, profile, login overlay, responsive breakpoints, and animations.
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ─── Login form UX ─── */
+.login-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.login-field input { padding-right: 42px; }
+
+/* ─── Icon color utilities (used on stat-icon elements) ─── */
+.icon-cyan    { background: rgba(0,245,255,0.12);   color: var(--cyan) !important; }
+.icon-emerald { background: rgba(0,255,157,0.12);   color: var(--emerald) !important; }
+.icon-gold    { background: rgba(255,215,0,0.12);   color: var(--gold) !important; }
+.icon-rose    { background: rgba(251,113,133,0.12); color: var(--rose) !important; }
+.icon-violet  { background: rgba(192,132,252,0.12); color: var(--violet) !important; }
+.icon-magenta { background: rgba(255,0,229,0.12);   color: var(--magenta) !important; }
+.icon-amber   { background: rgba(245,158,11,0.12);  color: var(--amber) !important; }
+.icon-sapphire{ background: rgba(96,165,250,0.12);  color: var(--sapphire) !important; }
+
+/* ─── Stat Card utilities ─── */
+.stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.1;
+    margin: 4px 0 2px;
+}
+.stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* ─── Card (generic) ─── */
+.card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 22px 24px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.card:hover {
+    border-color: rgba(255,255,255,0.14);
+}
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+.card-title {
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ─── Grid Helpers ─── */
+.grid { display: grid; gap: 20px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 1200px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px)  { .grid-3 { grid-template-columns: repeat(2, 1fr); } .grid-2 { grid-template-columns: 1fr; } }
+@media (max-width: 600px)  { .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+
+/* ─── Table ─── */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th { padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
+.table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+.table tbody tr:hover { background: rgba(255,255,255,0.03); }
+.table code { background: rgba(0,245,255,0.08); color: var(--cyan); padding: 2px 7px; border-radius: 5px; font-size: 11px; }
+
+/* ─── Badge ─── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 4px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.badge-subtle { background: rgba(255,255,255,0.07); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
+.badge-subtle:hover { background: rgba(0,245,255,0.1); color: var(--cyan); border-color: var(--cyan); }
+
+/* ─── Top Header ─── */
+.top-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+.top-header h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.top-header p  { font-size: 13px; color: var(--text-muted); }
+
+/* ─── Nav Tabs ─── */
+.nav-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.nav-tab {
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Nunito', sans-serif;
+}
+.nav-tab.active, .nav-tab:hover {
+    background: rgba(0,245,255,0.12);
+    border-color: var(--cyan);
+    color: var(--cyan);
+}
+
+/* ─── Quick Actions Grid ─── */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+}
+.quick-action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+.quick-action-item i { font-size: 26px; transition: transform 0.3s ease; }
+.quick-action-item:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); transform: translateY(-4px); }
+.quick-action-item:hover i { transform: scale(1.2); }
+
+/* ─── Notice Card ─── */
+.notice-card { border: 1px solid rgba(255,255,255,0.08); }
+
+/* ─── Profile Card (used in student profile & parent dashboard) ─── */
+.profile-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.profile-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(0,245,255,0.12);
+    border: 2px solid rgba(0,245,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    color: var(--cyan);
+    flex-shrink: 0;
+}
+.profile-details h2 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.profile-details p  { font-size: 13px; color: var(--text-muted); margin: 3px 0; display: flex; align-items: center; gap: 6px; }
+.role-badge { color: var(--cyan); font-weight: 700; font-size: 13px !important; }
+
+/* ─── GPA select (reusable form input style) ─── */
+.gpa-select {
+    padding: 9px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 13px;
+    font-family: 'Nunito', sans-serif;
+    outline: none;
+    transition: all 0.2s ease;
+}
+.gpa-select:focus { border-color: var(--cyan); background: rgba(0,245,255,0.04); }
+.gpa-select option { background: #0a1628; }
+
+/* ─── Ring SVG (attendance) ─── */
+.progress-ring-container { position: relative; width: 90px; height: 90px; }
+.ring-svg { transform: rotate(-90deg); width: 90px; height: 90px; }
+.ring-bg   { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 10; }
+.ring-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1.5s ease; }
+.ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; }
+
+/* ─── Attendance Tags ─── */
+.attendance-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-align: center; }
+.bg-present  { background: rgba(0,255,157,0.15); color: var(--emerald); }
+.bg-absent   { background: rgba(251,113,133,0.15); color: var(--rose); }
+.bg-late     { background: rgba(255,215,0,0.15); color: var(--gold); }
+.bg-holiday  { background: rgba(255,255,255,0.06); color: var(--text-muted); }

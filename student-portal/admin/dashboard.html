@@ -15,13 +15,16 @@
             role: 'admin',
             pageId: 'dashboard',
             onReady: (main) => {
-                const totalStudentsCount = CLASSES.reduce((acc, c) => acc + c.students, 0);
+                // FIX: use actual stored student count, not approximate class rosters
+                const allStudents = getStoredStudents();
+                const totalStudentsCount = allStudents.length;
+                const totalNotices = getStoredNotices().length;
 
                 main.innerHTML = `
                     <div class="top-header fade-in">
                         <div class="header-left">
                             <h1>School Overview & Admin Control 🛡️</h1>
-                            <p>Kavresthali Secondary School Management System — Principal Bishnu P. Gautam</p>
+                            <p>Kavresthali Secondary School — ${getDayName()}, ${getNepaliDate()} — Principal: Bishnu P. Gautam</p>
                         </div>
                     </div>
 
@@ -29,7 +32,7 @@
                         <div class="stat-card">
                             <div class="stat-icon icon-gold"><i class='bx bx-group'></i></div>
                             <div class="stat-value" id="aStudents">${totalStudentsCount}</div>
-                            <div class="stat-label">Total Students Enrolled</div>
+                            <div class="stat-label">Registered Students</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon icon-cyan"><i class='bx bx-id-card'></i></div>
@@ -42,9 +45,9 @@
                             <div class="stat-label">Active Class Sections</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-icon icon-rose"><i class='bx bx-line-chart'></i></div>
-                            <div class="stat-value">94%</div>
-                            <div class="stat-label">Avg Attendance Rate</div>
+                            <div class="stat-icon icon-rose"><i class='bx bx-bell'></i></div>
+                            <div class="stat-value" id="aNotices">${totalNotices}</div>
+                            <div class="stat-label">Published Notices</div>
                         </div>
                     </div>
 
@@ -69,6 +72,14 @@
                                 <div>
                                     <div style="font-size:12px; color:var(--text-muted);">Contact Phone</div>
                                     <div style="font-weight:600; margin-top:2px;">${SCHOOL.phone}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:12px; color:var(--text-muted);">Email</div>
+                                    <div style="font-weight:600; margin-top:2px;">${SCHOOL.email}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:12px; color:var(--text-muted);">Principal</div>
+                                    <div style="font-weight:600; margin-top:2px;">${SCHOOL.principal}</div>
                                 </div>
                                 <div style="grid-column: span 2;">
                                     <div style="font-size:12px; color:var(--text-muted);">School Motto</div>
@@ -98,6 +109,14 @@
                                     <i class='bx bx-line-chart' style="color:var(--rose);"></i>
                                     <span>Reports</span>
                                 </a>
+                                <a href="notices.html" class="quick-action-item">
+                                    <i class='bx bx-bell' style="color:var(--violet);"></i>
+                                    <span>Notices</span>
+                                </a>
+                                <a href="../student/dashboard.html" class="quick-action-item">
+                                    <i class='bx bxs-graduation' style="color:var(--sapphire);"></i>
+                                    <span>Student View</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -108,7 +127,7 @@
                             <a href="notices.html" class="badge badge-subtle">Publish Notice</a>
                         </div>
                         <div>
-                            ${renderNoticeItems(NOTICES.slice(0, 3))}
+                            ${renderNoticeItems(getStoredNotices().slice(0, 3))}
                         </div>
                     </div>
                 `;
@@ -116,6 +135,7 @@
                 animateCounter(document.getElementById('aStudents'), totalStudentsCount);
                 animateCounter(document.getElementById('aTeachers'), TEACHERS.length);
                 animateCounter(document.getElementById('aClasses'), CLASSES.length);
+                animateCounter(document.getElementById('aNotices'), totalNotices);
             }
         });
     </script>

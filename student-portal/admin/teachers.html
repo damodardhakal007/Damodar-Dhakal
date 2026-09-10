@@ -15,31 +15,80 @@
             role: 'admin',
             pageId: 'teachers',
             onReady: (main) => {
-                let teacherCards = TEACHERS.map(t => `
-                    <div class="card fade-in">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                const subjectColors = {
+                    'Mathematics': 'var(--cyan)', 'English': 'var(--sapphire)', 'Science': 'var(--emerald)',
+                    'Nepali': 'var(--gold)', 'Social Studies': 'var(--violet)', 'Computer Science': 'var(--rose)',
+                };
+
+                let teacherCards = TEACHERS.map(t => {
+                    const color = subjectColors[t.subject] || 'var(--text-muted)';
+                    const totalStudents = t.classes.reduce((acc, cId) => {
+                        const cls = CLASSES.find(c => c.id === cId);
+                        return acc + (cls ? cls.students : 0);
+                    }, 0);
+                    const classBadges = t.classes.map(cId => {
+                        const cls = CLASSES.find(c => c.id === cId);
+                        return cls ? `<span style="display:inline-block; padding:2px 8px; background:rgba(255,255,255,0.06); border-radius:4px; font-size:11px; margin:2px 2px 0 0;">${cls.name} ${cls.section}</span>` : '';
+                    }).join('');
+                    return `
+                    <div class="card fade-in" style="border-left:3px solid ${color};">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
                             <div>
-                                <h3 style="font-size:16px;">${t.name}</h3>
-                                <span style="font-size:12px; color:var(--gold); font-weight:700;">${t.id} • ${t.subject}</span>
+                                <h3 style="font-size:16px; margin-bottom:4px;">${t.name}</h3>
+                                <span style="font-size:12px; color:${color}; font-weight:700;"><i class='bx bx-id-card'></i> ${t.id}</span>
                             </div>
-                            <span class="badge badge-subtle">${t.experience}</span>
+                            <div style="text-align:right;">
+                                <span class="badge badge-subtle" style="font-size:11px;">${t.experience}</span>
+                                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">${totalStudents} students</div>
+                            </div>
                         </div>
-                        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
-                            <div><i class='bx bx-award'></i> Qualification: ${t.qualification}</div>
-                            <div><i class='bx bx-book'></i> Subjects: ${t.subjects.join(', ')}</div>
-                            <div><i class='bx bx-building-house'></i> Classes: ${t.classes.map(c => getClassName(c)).join(', ')}</div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+                            <div><i class='bx bx-book' style="color:${color};"></i> <strong>Subjects:</strong><br><span style="color:var(--text-muted);">${t.subjects.join(', ')}</span></div>
+                            <div><i class='bx bx-award' style="color:${color};"></i> <strong>Qualification:</strong><br><span style="color:var(--text-muted);">${t.qualification}</span></div>
                         </div>
-                        <div style="font-size:11px; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
-                            📞 ${t.phone} | ✉️ ${t.email}
+
+                        <div style="margin-bottom:12px;">
+                            <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;"><i class='bx bx-building-house'></i> Assigned Classes:</div>
+                            <div>${classBadges}</div>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.06); padding-top:10px; font-size:11px; color:var(--text-muted); flex-wrap:wrap; gap:6px;">
+                            <span>📞 ${t.phone}</span>
+                            <span>✉️ ${t.email}</span>
                         </div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
 
                 main.innerHTML = `
                     <div class="top-header fade-in">
                         <div class="header-left">
                             <h1>Faculty & Teacher Directory</h1>
-                            <p>Manage Teaching Staff & Department Assignments</p>
+                            <p>Teaching Staff — ${TEACHERS.length} Faculty Members across ${CLASSES.length} Class Sections</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-4 fade-in" style="margin-bottom:24px;">
+                        <div class="stat-card">
+                            <div class="stat-icon icon-cyan"><i class='bx bx-id-card'></i></div>
+                            <div class="stat-value">${TEACHERS.length}</div>
+                            <div class="stat-label">Total Faculty</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-emerald"><i class='bx bx-book'></i></div>
+                            <div class="stat-value">${[...new Set(TEACHERS.flatMap(t => t.subjects))].length}</div>
+                            <div class="stat-label">Subjects Taught</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-gold"><i class='bx bx-building-house'></i></div>
+                            <div class="stat-value">${CLASSES.length}</div>
+                            <div class="stat-label">Class Sections</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-violet"><i class='bx bx-award'></i></div>
+                            <div class="stat-value">${Math.round(TEACHERS.reduce((a,t) => a + parseInt(t.experience), 0) / TEACHERS.length)}</div>
+                            <div class="stat-label">Avg Experience (yrs)</div>
                         </div>
                     </div>
 

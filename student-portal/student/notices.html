@@ -6,6 +6,37 @@
     <title>Notices | Student Portal — KSS</title>
     <link rel="stylesheet" href="../portal.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .filter-btn {
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+        .filter-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+        .filter-btn.active { background: var(--cyan); border-color: var(--cyan); color: #000; font-weight: 700; }
+        .filter-btn[data-type="exam"].active    { background: var(--rose);    border-color: var(--rose);    color: #fff; }
+        .filter-btn[data-type="fee"].active     { background: var(--gold);    border-color: var(--gold);    color: #000; }
+        .filter-btn[data-type="event"].active   { background: var(--violet);  border-color: var(--violet);  color: #fff; }
+        .filter-btn[data-type="general"].active { background: var(--emerald); border-color: var(--emerald); color: #000; }
+        .notice-count { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+        .type-badge-exam    { background: rgba(251,113,133,0.15); color: var(--rose);    border: 1px solid rgba(251,113,133,0.3); }
+        .type-badge-fee     { background: rgba(255,215,0,0.15);   color: var(--gold);    border: 1px solid rgba(255,215,0,0.3); }
+        .type-badge-event   { background: rgba(192,132,252,0.15); color: var(--violet);  border: 1px solid rgba(192,132,252,0.3); }
+        .type-badge-general { background: rgba(0,255,157,0.12);   color: var(--emerald); border: 1px solid rgba(0,255,157,0.3); }
+    </style>
 </head>
 <body>
     <div id="app"></div>
@@ -15,20 +46,46 @@
             role: 'student',
             pageId: 'notices',
             onReady: (main) => {
-                const currentNotices = getStoredNotices();
-                let noticeCards = currentNotices.map(n => `
-                    <div class="card notice-card fade-in" style="margin-bottom:16px;">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <div>
-                                <span class="badge badge-subtle" style="text-transform:uppercase; margin-bottom:8px; display:inline-block;">${n.type}</span>
-                                <h3 style="margin-bottom:6px; font-size:16px;">${n.title}</h3>
+                let allNotices = getStoredNotices();
+                let activeFilter = 'all';
+
+                function renderNoticeCards(list) {
+                    if (list.length === 0) {
+                        return `<div style="text-align:center; padding:40px; color:var(--text-muted);">
+                            <i class='bx bx-bell-off' style="font-size:48px; opacity:0.3;"></i>
+                            <p style="margin-top:12px;">No notices found for this category.</p>
+                        </div>`;
+                    }
+                    return list.map(n => `
+                        <div class="card notice-card fade-in" style="margin-bottom:16px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+                                <div>
+                                    <span class="badge type-badge-${n.type}" style="text-transform:uppercase; font-size:10px; margin-bottom:8px; display:inline-block; border-radius:6px; padding:3px 8px;">${n.type}</span>
+                                    <h3 style="margin-bottom:6px; font-size:16px; line-height:1.4;">${n.title}</h3>
+                                </div>
+                                <span style="font-size:12px; color:var(--text-muted); white-space:nowrap;">
+                                    <i class='bx bx-calendar'></i> ${n.date}
+                                </span>
                             </div>
-                            <span style="font-size:12px; color:var(--text-muted);"><i class='bx bx-calendar'></i> ${n.date}</span>
+                            <p style="color:var(--text-secondary); font-size:13px; margin:8px 0 12px; line-height:1.6;">${n.detail}</p>
+                            <div style="font-size:11px; color:var(--text-muted); text-align:right; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+                                Issued by: <strong>${n.author}</strong>
+                            </div>
                         </div>
-                        <p style="color:var(--text-secondary); font-size:13px; margin:8px 0 12px; line-height:1.5;">${n.detail}</p>
-                        <div style="font-size:11px; color:var(--text-muted); text-align:right;">Issued by: <strong>${n.author}</strong></div>
-                    </div>
-                `).join('');
+                    `).join('');
+                }
+
+                function applyFilter() {
+                    const filtered = activeFilter === 'all'
+                        ? allNotices
+                        : allNotices.filter(n => n.type === activeFilter);
+
+                    document.getElementById('noticeCount').textContent = `Showing ${filtered.length} of ${allNotices.length} notices`;
+                    document.getElementById('noticesList').innerHTML = renderNoticeCards(filtered);
+                    document.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.type === activeFilter);
+                    });
+                }
 
                 main.innerHTML = `
                     <div class="top-header fade-in">
@@ -38,10 +95,27 @@
                         </div>
                     </div>
 
-                    <div>
-                        ${noticeCards}
+                    <div class="card fade-in" style="margin-bottom:20px; padding:16px 20px;">
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px; font-weight:600;">Filter by Category:</div>
+                        <div class="filter-bar">
+                            <button class="filter-btn active" data-type="all" onclick="setFilter('all')">🔔 All Notices</button>
+                            <button class="filter-btn" data-type="exam" onclick="setFilter('exam')">📋 Examination</button>
+                            <button class="filter-btn" data-type="fee" onclick="setFilter('fee')">💰 Fee Notices</button>
+                            <button class="filter-btn" data-type="event" onclick="setFilter('event')">🎓 Events</button>
+                            <button class="filter-btn" data-type="general" onclick="setFilter('general')">📢 General</button>
+                        </div>
+                        <div class="notice-count" id="noticeCount">Showing ${allNotices.length} of ${allNotices.length} notices</div>
+                    </div>
+
+                    <div id="noticesList">
+                        ${renderNoticeCards(allNotices)}
                     </div>
                 `;
+
+                window.setFilter = function(type) {
+                    activeFilter = type;
+                    applyFilter();
+                };
             }
         });
     </script>

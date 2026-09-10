@@ -17,15 +17,22 @@
             onReady: (main) => {
                 const todayKey = getTodayKey();
                 const todayClasses = CLASS_SCHEDULE[todayKey] || [];
+                // FIX: always fetch live GPA from storage
                 const currentStudentGPA = calculateStudentGPA('STU-10A-007');
                 const storedNotices = getStoredNotices();
-                const myStudentGrades = getStoredGrades().filter(g => g.studentId === 'STU-10A-007');
+                const dayName = getDayName();
+                const greeting = getDayGreeting();
+                const nepDate = getNepaliDate();
 
                 main.innerHTML = `
                     <div class="top-header fade-in">
                         <div class="header-left">
-                            <h1>Welcome back, Damodar! 👋</h1>
-                            <p>Kavresthali Secondary School — Student Portal (Class 10 Section A)</p>
+                            <h1>${greeting}, Damodar! 👋</h1>
+                            <p>
+                                <i class='bx bx-calendar' style="color:var(--cyan);"></i>
+                                <strong>${dayName}</strong> — ${nepDate} &nbsp;|&nbsp;
+                                Kavresthali Secondary School — Class 10 Section A
+                            </p>
                         </div>
                     </div>
 
@@ -55,7 +62,9 @@
                     <div class="grid grid-2 fade-in">
                         <div class="card">
                             <div class="card-header">
-                                <span class="card-title"><i class='bx bx-calendar-event' style="color:var(--cyan);"></i> Today's Schedule</span>
+                                <span class="card-title"><i class='bx bx-calendar-event' style="color:var(--cyan);"></i> Today's Schedule
+                                    ${todayClasses.length === 0 ? '<span style="font-size:11px; color:var(--text-muted); margin-left:6px;">(No classes)</span>' : ''}
+                                </span>
                                 <a href="schedule.html" class="badge badge-subtle">Full Timetable</a>
                             </div>
                             <div class="schedule-list">
@@ -84,6 +93,14 @@
                                     <i class='bx bx-user-circle' style="color:var(--violet);"></i>
                                     <span>Profile</span>
                                 </a>
+                                <a href="notices.html" class="quick-action-item">
+                                    <i class='bx bx-bell' style="color:var(--rose);"></i>
+                                    <span>Notices</span>
+                                </a>
+                                <a href="schedule.html" class="quick-action-item">
+                                    <i class='bx bx-calendar' style="color:var(--sapphire);"></i>
+                                    <span>Schedule</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -101,6 +118,8 @@
 
                 animateCounter(document.getElementById('cGPA'), currentStudentGPA, 2);
                 animateCounter(document.getElementById('cAtt'), MY_ATTENDANCE.percentage, 0, '%');
+                animateCounter(document.getElementById('cSub'), SUBJECTS_C10.length);
+                animateCounter(document.getElementById('cNotices'), storedNotices.length);
             }
         });
     </script>

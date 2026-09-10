@@ -180,16 +180,16 @@
     </div>
 
     <script>
+        // Clear any existing session when user is on the role-selector page
+        // This ensures switching roles always requires fresh login
+        sessionStorage.removeItem('portal_logged_in');
+        sessionStorage.removeItem('portal_role');
+        sessionStorage.removeItem('portal_user');
+
         function selectRole(role) {
-            const users = {
-                student: { username: 'student', password: '1234', role: 'student', name: 'Damodar Dhakal', id: 'STU-10A-007' },
-                teacher: { username: 'teacher', password: '1234', role: 'teacher', name: 'Ram Bahadur Sharma', id: 'TCH-001' },
-                admin:   { username: 'admin',   password: '1234', role: 'admin',   name: 'Bishnu Prasad Gautam', id: 'ADM-001' },
-                parent:  { username: 'parent',  password: '1234', role: 'parent',  name: 'Krishna Dhakal', id: 'PAR-007', childId: 'STU-10A-007' },
-            };
-            sessionStorage.setItem('portal_role', role);
-            sessionStorage.setItem('portal_logged_in', 'true');
-            sessionStorage.setItem('portal_user', JSON.stringify(users[role]));
+            // Just store which role was selected — the portal page will show login form.
+            // Do NOT set portal_logged_in here; user must authenticate on the next page.
+            sessionStorage.setItem('portal_selected_role', role);
         }
     </script>
 </body>

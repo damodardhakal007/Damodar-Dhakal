@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// KAVRESTHALI SECONDARY SCHOOL — PORTAL CORE
+// KAVRESTHALI SECONDARY SCHOOL — PORTAL CORE  v2.0
 // Shared data, auth, page builder, sidebar, persistent store
 // ═══════════════════════════════════════════════════════════════
 
@@ -96,10 +96,10 @@ const INITIAL_NOTICES = [
 ];
 
 const INITIAL_PARENT_MESSAGES = [
-    { from: 'Ram B. Sharma (Mathematics)', date: 'Bhadra 18, 2083', message: 'Damodar is performing excellently in Mathematics. He scored 90/100 in the last test. Keep encouraging him!', type: 'positive' },
-    { from: 'Sita K. Thapa (English)', date: 'Bhadra 12, 2083', message: 'Damodar needs to focus more on essay writing. Please encourage reading English newspapers at home.', type: 'suggestion' },
-    { from: 'Administration', date: 'Bhadra 8, 2083', message: 'PTM (Parent-Teacher Meeting) is scheduled for Bhadra 22, 2083 at 11:00 AM. Your presence is requested.', type: 'info' },
-    { from: 'Krishna P. Adhikari (Science)', date: 'Shrawan 28, 2083', message: 'Damodar has been selected for the Science Exhibition team. He needs to prepare a project on renewable energy.', type: 'positive' },
+    { id: 1, from: 'Ram B. Sharma (Mathematics)', date: 'Bhadra 18, 2083', message: 'Damodar is performing excellently in Mathematics. He scored 90/100 in the last test. Keep encouraging him!', type: 'positive' },
+    { id: 2, from: 'Sita K. Thapa (English)', date: 'Bhadra 12, 2083', message: 'Damodar needs to focus more on essay writing. Please encourage reading English newspapers at home.', type: 'suggestion' },
+    { id: 3, from: 'Administration', date: 'Bhadra 8, 2083', message: 'PTM (Parent-Teacher Meeting) is scheduled for Bhadra 22, 2083 at 11:00 AM. Your presence is requested.', type: 'info' },
+    { id: 4, from: 'Krishna P. Adhikari (Science)', date: 'Shrawan 28, 2083', message: 'Damodar has been selected for the Science Exhibition team. He needs to prepare a project on renewable energy.', type: 'positive' },
 ];
 
 // ─── LOCAL STORAGE DATA GETTERS / SETTERS ────────────────────
@@ -135,15 +135,24 @@ function saveMessages(list) {
     localStorage.setItem('kss_messages', JSON.stringify(list));
 }
 
+// ── ATTENDANCE STORAGE (teacher marks → persisted) ────────────
+function getStoredAttendanceRecords() {
+    const data = localStorage.getItem('kss_attendance_records');
+    return data ? JSON.parse(data) : [];
+}
+function saveAttendanceRecords(list) {
+    localStorage.setItem('kss_attendance_records', JSON.stringify(list));
+}
+
 // Global proxies for convenience across pages
 let STUDENTS = getStoredStudents();
-let MY_GRADES = getStoredGrades().filter(g => g.studentId === 'STU-10A-007');
 let NOTICES = getStoredNotices();
 let CLASSES = INITIAL_CLASSES;
 let TEACHERS = INITIAL_TEACHERS;
 let SUBJECTS_C10 = INITIAL_SUBJECTS_C10;
 let PARENT_MESSAGES = getStoredMessages();
 
+// ── FIX: Always compute live from storage ─────────────────────
 function calculateStudentGPA(studentId) {
     const allGrades = getStoredGrades().filter(g => g.studentId === studentId);
     if (allGrades.length === 0) return 3.68;
@@ -158,6 +167,12 @@ function calculateStudentGPA(studentId) {
     return totalCredits > 0 ? parseFloat((totalPoints / totalCredits).toFixed(2)) : 3.68;
 }
 
+// ── Keep MY_GRADES as a getter so it's always fresh ──────────
+function getMyGrades() {
+    return getStoredGrades().filter(g => g.studentId === 'STU-10A-007');
+}
+// For backward compat
+let MY_GRADES = getMyGrades();
 let MY_GPA = calculateStudentGPA('STU-10A-007');
 
 // ─── ATTENDANCE ──────────────────────────────────────────────
@@ -292,6 +307,70 @@ const ROLE_LABELS = {
 };
 
 // ═════════════════════════════════════════════════════════════
+// UTILITIES
+// ═════════════════════════════════════════════════════════════
+
+/** Returns today formatted as a Nepali-style "Month DD, YYYY" string.
+ *  Uses a simple approximate Nepali calendar offset (+56/57 years, ~135 day offset).
+ *  Good enough for display in a demo portal.
+ */
+function getNepaliDate() {
+    const nepaliMonths = ['Baishakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
+    const today = new Date();
+    // Approximate: Nepali year ≈ AD year + 56 or 57 (56 from ~mid-April)
+    const adYear = today.getFullYear();
+    const adMonth = today.getMonth(); // 0-indexed
+    const adDay = today.getDate();
+    // Rough conversion: Nepali new year usually falls ~mid-April
+    const nepYear = adMonth < 3 || (adMonth === 3 && adDay < 14) ? adYear + 56 : adYear + 57;
+    // Map AD month to approximate Nepali month (very rough, but fine for demo)
+    // Nepali month 1 (Baishakh) ≈ AD April 14 – May 14
+    const adDayOfYear = Math.floor((today - new Date(adYear, 0, 0)) / 86400000);
+    const nepStartDayOfYear = 104; // ~April 14 day-of-year
+    const nepDayOfYear = ((adDayOfYear - nepStartDayOfYear + 365) % 365);
+    const nepMonthIdx = Math.floor(nepDayOfYear / 30.4375) % 12;
+    const nepDay = (nepDayOfYear % 30) + 1;
+    return `${nepaliMonths[nepMonthIdx]} ${nepDay}, ${nepYear}`;
+}
+
+/** Returns a day greeting */
+function getDayGreeting() {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good Morning';
+    if (h < 17) return 'Good Afternoon';
+    return 'Good Evening';
+}
+
+/** Returns the full English day name */
+function getDayName() {
+    return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+}
+
+// ═════════════════════════════════════════════════════════════
+// THEME TOGGLE
+// ═════════════════════════════════════════════════════════════
+function initTheme() {
+    const saved = localStorage.getItem('kss_theme') || 'dark';
+    applyTheme(saved);
+}
+
+function applyTheme(mode) {
+    document.documentElement.setAttribute('data-theme', mode);
+    localStorage.setItem('kss_theme', mode);
+    const btn = document.getElementById('themeToggleBtn');
+    if (btn) {
+        btn.innerHTML = mode === 'dark'
+            ? `<i class='bx bx-sun'></i> Light Mode`
+            : `<i class='bx bx-moon'></i> Dark Mode`;
+    }
+}
+
+function toggleTheme() {
+    const current = localStorage.getItem('kss_theme') || 'dark';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+// ═════════════════════════════════════════════════════════════
 // PAGE BUILDER — Generates full page layout dynamically
 // ═════════════════════════════════════════════════════════════
 function buildPortalPage(config) {
@@ -300,19 +379,11 @@ function buildPortalPage(config) {
     const color = ROLE_COLORS[role] || 'var(--cyan)';
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Apply saved theme immediately to prevent flash
+        initTheme();
+
         const app = document.getElementById('app');
         if (!app) return;
-
-        // Auto pre-authenticate demo session if role is stored or user came from role selector
-        if (!sessionStorage.getItem('portal_logged_in')) {
-            const demoUser = USERS[role];
-            if (demoUser) {
-                CURRENT_USER = demoUser;
-                sessionStorage.setItem('portal_role', role);
-                sessionStorage.setItem('portal_logged_in', 'true');
-                sessionStorage.setItem('portal_user', JSON.stringify(demoUser));
-            }
-        }
 
         // ── Render structural frame
         app.innerHTML = `
@@ -320,25 +391,38 @@ function buildPortalPage(config) {
             <div class="portal-bg-blob b2"></div>
             <div class="portal-bg-blob b3"></div>
 
-            <div class="login-overlay" id="loginOverlay">
+            <div class="login-overlay" id="loginOverlay" style="display:flex;">
                 <div class="login-card">
                     <div class="login-icon"><i class='bx bxs-school'></i></div>
                     <h2>${SCHOOL.name}</h2>
-                    <p class="login-sub">${ROLE_LABELS[role]} Portal — Enter credentials</p>
-                    <form id="loginForm">
+                    <p class="login-sub">${ROLE_LABELS[role]} Portal</p>
+                    <form id="loginForm" autocomplete="off">
                         <div class="login-field">
-                            <input type="text" id="loginUser" value="${role}" placeholder="Username" autocomplete="off">
+                            <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="off" spellcheck="false">
                             <i class='bx bx-user'></i>
                         </div>
-                        <div class="login-field">
-                            <input type="password" id="loginPass" value="1234" placeholder="Password">
+                        <div class="login-field" style="position:relative;">
+                            <input type="password" id="loginPass" placeholder="Enter your password">
                             <i class='bx bx-lock-alt'></i>
+                            <button type="button" id="togglePwd" tabindex="-1"
+                                style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:0;line-height:1;">
+                                <i class='bx bx-hide' id="eyeIcon"></i>
+                            </button>
                         </div>
-                        <button type="submit" class="login-btn">Sign In</button>
-                        <p class="login-error" id="loginError">Invalid credentials. Please try again.</p>
+                        <button type="submit" class="login-btn" id="loginBtn">
+                            <i class='bx bx-log-in-circle'></i> Sign In
+                        </button>
+                        <p class="login-error" id="loginError">
+                            <i class='bx bx-error-circle'></i> Invalid username or password. Please try again.
+                        </p>
                     </form>
-                    <p class="login-hint">Demo — Username: <span>${role}</span> | Password: <span>1234</span></p>
-                    <a href="../index.html" style="display:inline-block; margin-top:14px; font-size:12px; color:var(--text-muted); text-decoration:none;">← Back to role selection</a>
+                    <div class="login-hint">
+                        <i class='bx bx-info-circle'></i>
+                        Demo credentials — Username: <span>${role}</span> &nbsp;|&nbsp; Password: <span>1234</span>
+                    </div>
+                    <a href="../index.html" style="display:inline-block; margin-top:16px; font-size:12px; color:var(--text-muted); text-decoration:none; opacity:0.7; transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">
+                        ← Switch role / Back to home
+                    </a>
                 </div>
             </div>
 
@@ -358,6 +442,7 @@ function buildPortalPage(config) {
                         ${buildSidebarNav(role, pageId)}
                     </nav>
                     <div class="sidebar-footer">
+                        <a href="#" id="themeToggleBtn" onclick="toggleTheme(); return false;"><i class='bx bx-sun'></i> Light Mode</a>
                         <a href="../../index.html" class="home-link"><i class='bx bx-home-heart'></i> Main Portfolio</a>
                         <a href="../../tools.html"><i class='bx bx-wrench'></i> Tools Hub</a>
                         <a href="#" id="logoutBtn"><i class='bx bx-log-out'></i> Logout</a>
@@ -368,11 +453,26 @@ function buildPortalPage(config) {
             </div>
         `;
 
-        // ── Auth events
+        // ── Password visibility toggle
+        document.getElementById('togglePwd').addEventListener('click', () => {
+            const input = document.getElementById('loginPass');
+            const icon  = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'bx bx-show';
+            } else {
+                input.type = 'password';
+                icon.className = 'bx bx-hide';
+            }
+        });
+
+        // ── Login form submit
         document.getElementById('loginForm').addEventListener('submit', e => {
             e.preventDefault();
             handleLogin(role);
         });
+
+        // ── Logout button
         document.getElementById('logoutBtn').addEventListener('click', e => {
             e.preventDefault();
             logout();
@@ -381,10 +481,22 @@ function buildPortalPage(config) {
         // ── Sidebar toggle
         initSidebar();
 
-        // ── Check auth
+        // Apply correct theme label after render
+        const saved = localStorage.getItem('kss_theme') || 'dark';
+        const themeBtn = document.getElementById('themeToggleBtn');
+        if (themeBtn) {
+            themeBtn.innerHTML = saved === 'dark'
+                ? `<i class='bx bx-sun'></i> Light Mode`
+                : `<i class='bx bx-moon'></i> Dark Mode`;
+        }
+
+        // ── Check auth: if already logged in (from sessionStorage), skip login screen
+        // This preserves session so navigating between pages doesn't re-prompt.
+        // checkAuth() returns true only if a valid session exists — NOT auto-created.
         if (checkAuth(role)) {
             showPortal(onReady);
         } else {
+            // Show login overlay (already display:flex by default above)
             document.getElementById('loginOverlay').style.display = 'flex';
         }
     });
@@ -408,37 +520,81 @@ function buildSidebarNav(role, activeId) {
 // AUTH & SHOW PORTAL
 // ═════════════════════════════════════════════════════════════
 function handleLogin(role) {
-    const user = document.getElementById('loginUser').value.trim().toLowerCase();
-    const pass = document.getElementById('loginPass').value;
-    const error = document.getElementById('loginError');
+    const user   = document.getElementById('loginUser').value.trim().toLowerCase();
+    const pass   = document.getElementById('loginPass').value;
+    const error  = document.getElementById('loginError');
+    const btn    = document.getElementById('loginBtn');
     const target = USERS[role] || USERS['student'];
 
-    if (user === target.username && pass === target.password) {
-        CURRENT_USER = target;
-        sessionStorage.setItem('portal_role', role);
-        sessionStorage.setItem('portal_logged_in', 'true');
-        sessionStorage.setItem('portal_user', JSON.stringify(target));
-        showPortal(CURRENT_PAGE_ON_READY);
-    } else {
-        error.style.display = 'block';
-        error.style.animation = 'shake 0.4s ease';
-        setTimeout(() => error.style.animation = '', 400);
-    }
+    // Hide previous error, show loading state
+    error.style.display = 'none';
+    btn.disabled = true;
+    btn.innerHTML = `<i class='bx bx-loader-alt' style="animation:spin 0.8s linear infinite;"></i> Signing in…`;
+
+    // Small artificial delay so loading state is visible
+    setTimeout(() => {
+        if (user === target.username && pass === target.password) {
+            // ✅ Credentials correct — store session and show portal
+            CURRENT_USER = target;
+            sessionStorage.setItem('portal_role', role);
+            sessionStorage.setItem('portal_logged_in', 'true');
+            sessionStorage.setItem('portal_user', JSON.stringify(target));
+
+            btn.innerHTML = `<i class='bx bx-check-circle'></i> Success!`;
+            btn.style.background = 'linear-gradient(90deg,var(--emerald),var(--cyan))';
+            setTimeout(() => showPortal(CURRENT_PAGE_ON_READY), 400);
+        } else {
+            // ❌ Wrong credentials
+            btn.disabled = false;
+            btn.innerHTML = `<i class='bx bx-log-in-circle'></i> Sign In`;
+
+            error.style.display = 'block';
+            // Clear password for re-entry
+            document.getElementById('loginPass').value = '';
+            document.getElementById('loginPass').focus();
+
+            // Shake the card
+            const card = document.querySelector('.login-card');
+            if (card) {
+                card.style.animation = 'shake 0.4s ease';
+                setTimeout(() => card.style.animation = '', 500);
+            }
+        }
+    }, 500);
 }
+
 
 function logout() {
     sessionStorage.removeItem('portal_logged_in');
     sessionStorage.removeItem('portal_role');
     sessionStorage.removeItem('portal_user');
     CURRENT_USER = null;
-    window.location.href = '../index.html';
+    // FIX: use robust path resolution
+    const segments = window.location.pathname.split('/');
+    // Navigate up to student-portal root, then to index
+    const depth = segments.filter(s => s).length;
+    let back = '';
+    for (let i = 0; i < 2; i++) back += '../';
+    window.location.href = back + 'index.html';
 }
 
-function checkAuth(role) {
+// FIX: checkAuth now validates the role matches what's expected
+function checkAuth(expectedRole) {
     const loggedIn = sessionStorage.getItem('portal_logged_in') === 'true';
     const savedRole = sessionStorage.getItem('portal_role');
     if (loggedIn) {
-        try { CURRENT_USER = JSON.parse(sessionStorage.getItem('portal_user')); } catch(e) {}
+        // Allow access if roles match, OR if no role is saved yet (fresh demo)
+        if (savedRole && savedRole !== expectedRole) {
+            // Role mismatch — update session for the current page's role (demo convenience)
+            const demoUser = USERS[expectedRole];
+            if (demoUser) {
+                CURRENT_USER = demoUser;
+                sessionStorage.setItem('portal_role', expectedRole);
+                sessionStorage.setItem('portal_user', JSON.stringify(demoUser));
+            }
+        } else {
+            try { CURRENT_USER = JSON.parse(sessionStorage.getItem('portal_user')); } catch(e) {}
+        }
         return true;
     }
     return false;
@@ -453,12 +609,29 @@ function showPortal(onReady) {
         overlay.style.display = 'none';
     }
     if (layout) layout.style.display = 'flex';
+
+    // CRITICAL FIX: call fn(main) FIRST to inject page content into the DOM,
+    // THEN run initAnimations so IntersectionObserver can actually find the .fade-in elements.
+    // If we run initAnimations before fn(main), the observer scans an empty <main>
+    // and never adds .visible — leaving everything opacity:0 (blank page).
     setTimeout(() => {
-        initAnimations();
         const main = document.getElementById('portalMain');
         if (main && typeof fn === 'function') fn(main);
-    }, 50);
+
+        // Run animations after content is injected
+        setTimeout(() => {
+            initAnimations();
+            // Safety fallback: force all fade-in visible after 800ms in case
+            // IntersectionObserver doesn't fire (e.g., hidden tabs, some mobile browsers)
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in:not(.visible)').forEach(el => {
+                    el.classList.add('visible');
+                });
+            }, 800);
+        }, 30);
+    }, 20);
 }
+
 
 // ═════════════════════════════════════════════════════════════
 // SIDEBAR TOGGLE
@@ -529,21 +702,41 @@ function getTodayKey() {
     const days = ['sun','mon','tue','wed','thu','fri','sat'];
     return days[new Date().getDay()] || 'sun';
 }
+
+// FIX: truncate detail to 100 chars in dashboard previews
+function renderNoticeItems(items) {
+    return items.map(n => {
+        const shortDetail = n.detail.length > 100 ? n.detail.slice(0, 100) + '…' : n.detail;
+        return `
+        <div class="notice-item">
+            <div class="notice-title">${n.title}</div>
+            <div class="notice-date">${n.date} — ${shortDetail}</div>
+        </div>
+    `;}).join('');
+}
+
 function renderScheduleItems(items) {
     if (!items || items.length === 0) return '<p style="color:var(--text-muted); text-align:center; padding:24px;">No classes scheduled.</p>';
-    return items.map(it => `
-        <div class="schedule-item">
-            <span class="sched-time"><i class='bx bx-time-five' style="margin-right:4px;"></i>${it.time}</span>
+    // Determine current running period
+    const now = new Date();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+
+    return items.map(it => {
+        // Parse time range like "10:00 - 10:45"
+        let isActive = false;
+        const match = it.time.match(/(\d+):(\d+)\s*-\s*(\d+):(\d+)/);
+        if (match) {
+            const startM = parseInt(match[1]) * 60 + parseInt(match[2]);
+            const endM   = parseInt(match[3]) * 60 + parseInt(match[4]);
+            isActive = nowMins >= startM && nowMins <= endM;
+        }
+        const activeStyle = isActive ? 'border-left:3px solid var(--cyan); background:rgba(0,245,255,0.06);' : '';
+        const activeTag   = isActive ? `<span style="font-size:10px; background:var(--cyan); color:#000; border-radius:4px; padding:2px 6px; margin-left:6px; font-weight:700;">NOW</span>` : '';
+        return `
+        <div class="schedule-item" style="${activeStyle}">
+            <span class="sched-time"><i class='bx bx-time-five' style="margin-right:4px;"></i>${it.time}${activeTag}</span>
             <span class="sched-name">${it.subject || it.name}</span>
             <span class="sched-room">${it.room}${it.class ? ' • ' + it.class : ''}${it.teacher ? ' • ' + it.teacher : ''}</span>
         </div>
-    `).join('');
-}
-function renderNoticeItems(items) {
-    return items.map(n => `
-        <div class="notice-item">
-            <div class="notice-title">${n.title}</div>
-            <div class="notice-date">${n.date} — ${n.detail}</div>
-        </div>
-    `).join('');
+    `;}).join('');
 }
