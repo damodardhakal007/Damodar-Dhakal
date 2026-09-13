@@ -19,6 +19,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Route for file storage vault
+app.get(['/file-storage', '/cloud-storage', '/storage'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'file-storage.html'));
+});
+
 // Fallback: 404 for missing static assets, index.html for page navigations
 app.use((req, res) => {
   if (path.extname(req.path)) {

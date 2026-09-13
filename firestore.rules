@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isStaff() {
+      return isSignedIn() && (
+        request.auth.token.email == 'damodardhakal008@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'teacher'])
+      );
+    }
+
+    // User profile: authenticated users can read profiles; owners create/edit; staff (admins & teachers) can verify
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId);
+      allow list: if isSignedIn();
+      allow create: if isOwner(userId) && isValidId(userId)
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isValidId(userId) && (isOwner(userId) || isStaff());
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      // User files: only the authenticated owner can access, upload, list, or delete their own files
+      match /files/{fileId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(fileId);
+        allow list: if isOwner(userId) && isValidId(userId);
+        allow create: if isOwner(userId) && isValidId(userId) && isValidId(fileId)
+          && request.resource.data.userId == request.auth.uid;
+        allow update: if isOwner(userId) && isValidId(userId) && isValidId(fileId)
+          && request.resource.data.userId == request.auth.uid;
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(fileId);
+      }
+    }
+  }
+}
