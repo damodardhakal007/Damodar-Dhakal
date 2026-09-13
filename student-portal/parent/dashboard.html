@@ -16,7 +16,8 @@
             pageId: 'dashboard',
             onReady: (main) => {
                 const currentStudents = getStoredStudents();
-                const child = currentStudents.find(s => s.id === USERS.parent.childId) || currentStudents[6];
+                const wardMatch = CURRENT_USER && CURRENT_USER.wardName ? currentStudents.find(s => s.name.toLowerCase().includes(CURRENT_USER.wardName.toLowerCase())) : null;
+                const child = wardMatch || currentStudents.find(s => s.id === USERS.parent.childId) || currentStudents[6];
                 const liveGPA = calculateStudentGPA(child.id);
                 const childGrades = getStoredGrades().filter(g => g.studentId === child.id);
                 const currentMessages = getStoredMessages();

@@ -23,11 +23,12 @@
                 const dayName = getDayName();
                 const greeting = getDayGreeting();
                 const nepDate = getNepaliDate();
+                const userName = (CURRENT_USER && (CURRENT_USER.displayName || CURRENT_USER.name)) || 'Damodar';
 
                 main.innerHTML = `
                     <div class="top-header fade-in">
                         <div class="header-left">
-                            <h1>${greeting}, Damodar! 👋</h1>
+                            <h1>${greeting}, ${userName}! 👋</h1>
                             <p>
                                 <i class='bx bx-calendar' style="color:var(--cyan);"></i>
                                 <strong>${dayName}</strong> — ${nepDate} &nbsp;|&nbsp;

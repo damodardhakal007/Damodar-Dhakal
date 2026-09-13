@@ -149,6 +149,25 @@
             <p class="motto">ज्ञानं परमं बलम् — Knowledge is Supreme Power</p>
         </div>
 
+        <!-- Google Fast Sign-in Hero -->
+        <div style="max-width:460px; width:100%; margin:0 auto 32px; text-align:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px 24px;">
+            <p style="font-size:13px; color:#e0e0e0; font-weight:600; margin-bottom:12px;">
+                Direct Google Authentication for All Members
+            </p>
+            <button type="button" id="indexGoogleBtn" class="google-btn" style="width:100%; justify-content:center;" onclick="handleGoogleSignIn('student')">
+                <img class="google-logo" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                <span>Sign in with Google</span>
+            </button>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:10px; display:flex; align-items:center; justify-content:center; gap:6px;">
+                <i class='bx bx-shield-quarter' style="color:var(--cyan); font-size:14px;"></i>
+                <span>Teacher & Admin verification required for new member registrations</span>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin-bottom:18px; color:var(--text-muted); font-size:12px; letter-spacing:0.5px; text-transform:uppercase;">
+            — Or Choose Your Dedicated School Portal —
+        </div>
+
         <div class="role-grid">
             <a href="student/dashboard.html" class="role-card" onclick="selectRole('student')">
                 <div class="role-card-icon"><i class='bx bxs-graduation'></i></div>
@@ -179,6 +198,7 @@
         <a href="../index.html" class="back-link"><i class='bx bx-arrow-back'></i> Back to Damodar's Portfolio</a>
     </div>
 
+    <script src="portal.js"></script>
     <script>
         // Clear any existing session when user is on the role-selector page
         // This ensures switching roles always requires fresh login
