@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kavresthali Secondary School — Portal</title>
+    <meta name="description" content="Kavresthali Secondary School Management Portal — Student, Teacher, Admin & Parent access.">
+    <link rel="stylesheet" href="portal.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .school-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .school-logo-icon {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0,245,255,0.15), rgba(255,0,229,0.15));
+            border: 2px solid rgba(0,245,255,0.3);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 42px;
+            color: var(--cyan);
+            animation: pulseIcon 3s ease-in-out infinite;
+        }
+        @keyframes pulseIcon {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,245,255,0.3); }
+            50% { box-shadow: 0 0 0 16px rgba(0,245,255,0); }
+        }
+        .school-header h1 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+        .school-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .school-header .motto {
+            font-style: italic;
+            color: var(--gold);
+            font-size: 13px;
+            margin-top: 6px;
+        }
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 960px;
+            width: 100%;
+        }
+        .role-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 36px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .role-card:nth-child(1)::before { background: linear-gradient(90deg, var(--cyan), var(--sapphire)); }
+        .role-card:nth-child(2)::before { background: linear-gradient(90deg, var(--emerald), var(--cyan)); }
+        .role-card:nth-child(3)::before { background: linear-gradient(90deg, var(--gold), var(--coral)); }
+        .role-card:nth-child(4)::before { background: linear-gradient(90deg, var(--violet), var(--rose)); }
+        .role-card:hover::before { opacity: 1; }
+        .role-card:nth-child(1):hover { border-color: var(--cyan);    box-shadow: 0 20px 50px rgba(0,245,255,0.15);   transform: translateY(-8px); }
+        .role-card:nth-child(2):hover { border-color: var(--emerald); box-shadow: 0 20px 50px rgba(0,255,157,0.15);   transform: translateY(-8px); }
+        .role-card:nth-child(3):hover { border-color: var(--gold);    box-shadow: 0 20px 50px rgba(255,215,0,0.15);   transform: translateY(-8px); }
+        .role-card:nth-child(4):hover { border-color: var(--violet);  box-shadow: 0 20px 50px rgba(192,132,252,0.15); transform: translateY(-8px); }
+        .role-card-icon {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            border: 2px solid;
+            transition: all 0.3s ease;
+        }
+        .role-card:nth-child(1) .role-card-icon { background: rgba(0,245,255,0.1);   border-color: rgba(0,245,255,0.3);   color: var(--cyan); }
+        .role-card:nth-child(2) .role-card-icon { background: rgba(0,255,157,0.1);   border-color: rgba(0,255,157,0.3);   color: var(--emerald); }
+        .role-card:nth-child(3) .role-card-icon { background: rgba(255,215,0,0.1);   border-color: rgba(255,215,0,0.3);   color: var(--gold); }
+        .role-card:nth-child(4) .role-card-icon { background: rgba(192,132,252,0.1); border-color: rgba(192,132,252,0.3); color: var(--violet); }
+        .role-card:hover .role-card-icon { transform: scale(1.1) rotate(5deg); }
+        .role-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .role-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .role-card .demo-cred {
+            margin-top: 14px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            font-size: 11px;
+            color: #555;
+        }
+        .role-card .demo-cred span { color: var(--cyan); }
+        .back-link {
+            margin-top: 32px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover { color: var(--cyan); }
+        @media (max-width: 600px) {
+            .role-grid { grid-template-columns: 1fr; max-width: 360px; }
+            .school-header h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-bg-blob b1"></div>
+    <div class="portal-bg-blob b2"></div>
+    <div class="portal-bg-blob b3"></div>
+
+    <div class="login-page">
+        <div class="school-header">
+            <div class="school-logo-icon"><i class='bx bxs-school'></i></div>
+            <h1>Kavresthali Secondary School</h1>
+            <p>School Management Portal</p>
+            <p class="motto">ज्ञानं परमं बलम् — Knowledge is Supreme Power</p>
+        </div>
+
+        <div style="text-align:center; margin-bottom:18px; color:var(--text-muted); font-size:12px; letter-spacing:0.5px; text-transform:uppercase;">
+            — Or Choose Your Dedicated School Portal —
+        </div>
+
+        <div class="role-grid">
+            <a href="student/dashboard.html" class="role-card" onclick="selectRole('student')">
+                <div class="role-card-icon"><i class='bx bxs-graduation'></i></div>
+                <h3>Student</h3>
+                <p>View grades, attendance, schedule, and academic progress.</p>
+            </a>
+            <a href="teacher/dashboard.html" class="role-card" onclick="selectRole('teacher')">
+                <div class="role-card-icon"><i class='bx bxs-chalkboard'></i></div>
+                <h3>Teacher</h3>
+                <p>Manage classes, mark attendance, and enter student grades.</p>
+            </a>
+            <a href="admin/dashboard.html" class="role-card" onclick="selectRole('admin')">
+                <div class="role-card-icon"><i class='bx bxs-shield-alt-2'></i></div>
+                <h3>Administrator</h3>
+                <p>Manage students, teachers, classes, reports, and notices.</p>
+            </a>
+            <a href="parent/dashboard.html" class="role-card" onclick="selectRole('parent')">
+                <div class="role-card-icon"><i class='bx bxs-group'></i></div>
+                <h3>Parent</h3>
+                <p>Track your child's grades, attendance, and school messages.</p>
+            </a>
+        </div>
+
+        <a href="../index.html" class="back-link"><i class='bx bx-arrow-back'></i> Back to Damodar's Portfolio</a>
+    </div>
+
+    <script src="portal.js"></script>
+    <script>
+        // Clear any existing session when user is on the role-selector page
+        // This ensures switching roles always requires fresh login
+        sessionStorage.removeItem('portal_logged_in');
+        sessionStorage.removeItem('portal_role');
+        sessionStorage.removeItem('portal_user');
+
+        function selectRole(role) {
+            // Just store which role was selected — the portal page will show login form.
+            // Do NOT set portal_logged_in here; user must authenticate on the next page.
+            sessionStorage.setItem('portal_selected_role', role);
+        }
+    </script>
+</body>
+</html>

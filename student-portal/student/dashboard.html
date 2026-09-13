@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Student Portal — KSS</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'student',
+            pageId: 'dashboard',
+            onReady: (main) => {
+                const todayKey = getTodayKey();
+                const todayClasses = CLASS_SCHEDULE[todayKey] || [];
+                // FIX: always fetch live GPA from storage
+                const currentStudentGPA = calculateStudentGPA('STU-10A-007');
+                const storedNotices = getStoredNotices();
+                const dayName = getDayName();
+                const greeting = getDayGreeting();
+                const nepDate = getNepaliDate();
+                const userName = (CURRENT_USER && (CURRENT_USER.displayName || CURRENT_USER.name)) || 'Damodar';
+
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>${greeting}, ${userName}! 👋</h1>
+                            <p>
+                                <i class='bx bx-calendar' style="color:var(--cyan);"></i>
+                                <strong>${dayName}</strong> — ${nepDate} &nbsp;|&nbsp;
+                                Kavresthali Secondary School — Class 10 Section A
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-4 fade-in" style="margin-bottom:24px;">
+                        <div class="stat-card">
+                            <div class="stat-icon icon-cyan"><i class='bx bx-bar-chart-alt-2'></i></div>
+                            <div class="stat-value" id="cGPA">${currentStudentGPA}</div>
+                            <div class="stat-label">Current GPA (CDC Standard)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-emerald"><i class='bx bx-calendar-check'></i></div>
+                            <div class="stat-value" id="cAtt">${MY_ATTENDANCE.percentage}%</div>
+                            <div class="stat-label">Attendance Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-gold"><i class='bx bx-book-open'></i></div>
+                            <div class="stat-value" id="cSub">${SUBJECTS_C10.length}</div>
+                            <div class="stat-label">Enrolled Subjects</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-rose"><i class='bx bx-bell'></i></div>
+                            <div class="stat-value" id="cNotices">${storedNotices.length}</div>
+                            <div class="stat-label">Active Notices</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 fade-in">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title"><i class='bx bx-calendar-event' style="color:var(--cyan);"></i> Today's Schedule
+                                    ${todayClasses.length === 0 ? '<span style="font-size:11px; color:var(--text-muted); margin-left:6px;">(No classes)</span>' : ''}
+                                </span>
+                                <a href="schedule.html" class="badge badge-subtle">Full Timetable</a>
+                            </div>
+                            <div class="schedule-list">
+                                ${renderScheduleItems(todayClasses)}
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title"><i class='bx bx-rocket' style="color:var(--magenta);"></i> Quick Actions</span>
+                            </div>
+                            <div class="quick-actions-grid">
+                                <a href="subjects.html" class="quick-action-item">
+                                    <i class='bx bx-book-reader' style="color:var(--cyan);"></i>
+                                    <span>My Grades</span>
+                                </a>
+                                <a href="attendance.html" class="quick-action-item">
+                                    <i class='bx bx-calendar-check' style="color:var(--emerald);"></i>
+                                    <span>Attendance</span>
+                                </a>
+                                <a href="gpa.html" class="quick-action-item">
+                                    <i class='bx bx-bar-chart-alt-2' style="color:var(--gold);"></i>
+                                    <span>GPA Calc</span>
+                                </a>
+                                <a href="profile.html" class="quick-action-item">
+                                    <i class='bx bx-user-circle' style="color:var(--violet);"></i>
+                                    <span>Profile</span>
+                                </a>
+                                <a href="notices.html" class="quick-action-item">
+                                    <i class='bx bx-bell' style="color:var(--rose);"></i>
+                                    <span>Notices</span>
+                                </a>
+                                <a href="schedule.html" class="quick-action-item">
+                                    <i class='bx bx-calendar' style="color:var(--sapphire);"></i>
+                                    <span>Schedule</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card fade-in" style="margin-top:24px;">
+                        <div class="card-header">
+                            <span class="card-title"><i class='bx bx-bell' style="color:var(--gold);"></i> Latest School Announcements</span>
+                            <a href="notices.html" class="badge badge-subtle">All Notices</a>
+                        </div>
+                        <div>
+                            ${renderNoticeItems(storedNotices.slice(0, 3))}
+                        </div>
+                    </div>
+                `;
+
+                animateCounter(document.getElementById('cGPA'), currentStudentGPA, 2);
+                animateCounter(document.getElementById('cAtt'), MY_ATTENDANCE.percentage, 0, '%');
+                animateCounter(document.getElementById('cSub'), SUBJECTS_C10.length);
+                animateCounter(document.getElementById('cNotices'), storedNotices.length);
+            }
+        });
+    </script>
+</body>
+</html>
