@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Classes | Teacher Portal — KSS</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'teacher',
+            pageId: 'my-classes',
+            onReady: (main) => {
+                const myTeacher = TEACHERS[0]; // Ram Bahadur Sharma
+                const classCards = myTeacher.classes.map(cid => {
+                    const c = CLASSES.find(x => x.id === cid);
+                    return `
+                        <div class="card fade-in">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <div style="font-size:18px; font-weight:800; color:var(--emerald);">${c.name} ${c.section}</div>
+                                <span class="badge badge-subtle">${c.students} Students</span>
+                            </div>
+                            <div style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">
+                                <div><i class='bx bx-book' style="color:var(--emerald);"></i> Subject: <strong>Compulsory & Opt. Mathematics</strong></div>
+                                <div><i class='bx bx-user-pin' style="color:var(--cyan);"></i> Class Teacher: ${c.classTeacher === myTeacher.id ? '<strong>You</strong>' : getTeacherName(c.classTeacher)}</div>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <a href="attendance.html?class=${cid}" class="login-btn" style="padding:8px 14px; font-size:12px; text-decoration:none; display:inline-block; text-align:center;">Mark Attendance</a>
+                                <a href="grades.html?class=${cid}" class="login-btn" style="padding:8px 14px; font-size:12px; text-decoration:none; display:inline-block; text-align:center; background:rgba(255,255,255,0.06); color:var(--text-main);">Enter Grades</a>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>Assigned Classes & Sections</h1>
+                            <p>Overview of classes taught by Ram Bahadur Sharma (Department of Mathematics)</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 fade-in">
+                        ${classCards}
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

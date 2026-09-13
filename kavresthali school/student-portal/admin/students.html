@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students | Admin Portal — KSS</title>
+    <link rel="stylesheet" href="../portal.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="../portal.js"></script>
+    <script>
+        buildPortalPage({
+            role: 'admin',
+            pageId: 'students',
+            onReady: (main) => {
+                let allStudents = getStoredStudents();
+                let editingId = null; // tracks which student is being edited
+
+                let renderAdminStudentRows = (list) => {
+                    if (list.length === 0) {
+                        return '<tr><td colspan="9" style="text-align:center; padding:20px; color:var(--text-muted);">No student records found.</td></tr>';
+                    }
+                    return list.map(s => {
+                        const c = CLASSES.find(x => x.id === s.classId);
+                        const className = c ? `${c.name} ${c.section}` : s.classId;
+                        return `
+                            <tr>
+                                <td><code>${s.id}</code></td>
+                                <td><strong>${s.name}</strong></td>
+                                <td>${className}</td>
+                                <td>${s.roll}</td>
+                                <td>${s.gender === 'M' ? '👦 Male' : '👧 Female'}</td>
+                                <td>${s.parent}</td>
+                                <td>${s.phone}</td>
+                                <td><span class="badge badge-subtle">${s.bloodGroup || 'O+'}</span></td>
+                                <td>
+                                    <button onclick="editStudent('${s.id}')" style="background:none; border:none; color:var(--cyan); cursor:pointer; font-size:15px; margin-right:4px;" title="Edit Student"><i class='bx bx-edit'></i></button>
+                                    <button onclick="deleteStudent('${s.id}')" style="background:none; border:none; color:var(--rose); cursor:pointer; font-size:15px;" title="Remove Student"><i class='bx bx-trash'></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                };
+
+                main.innerHTML = `
+                    <div class="top-header fade-in">
+                        <div class="header-left">
+                            <h1>Manage Student Records</h1>
+                            <p>Master Directory — Kavresthali Secondary School Student Database</p>
+                        </div>
+                        <button onclick="showAddForm()" class="login-btn" style="padding:10px 20px; font-size:13px;"><i class='bx bx-user-plus'></i> Add New Student</button>
+                    </div>
+
+                    <!-- Add / Edit Student Form (hidden initially) -->
+                    <div id="addFormCard" class="card fade-in" style="display:none; margin-bottom:24px; border:1px solid var(--gold);">
+                        <div class="card-header">
+                            <span class="card-title" id="formTitle"><i class='bx bx-user-plus' style="color:var(--gold);"></i> Add New Student Registration</span>
+                        </div>
+                        <form id="newStudentForm" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Full Name *</label>
+                                <input type="text" id="stuName" required class="gpa-select" style="width:100%;" placeholder="e.g. Binod Thapa">
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Class & Section *</label>
+                                <select id="stuClass" class="gpa-select" style="width:100%;">
+                                    ${CLASSES.map(c => `<option value="${c.id}">${c.name} - Sec ${c.section}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Roll Number *</label>
+                                <input type="number" id="stuRoll" required class="gpa-select" style="width:100%;" min="1" max="100">
+                            </div>
+                            <!-- FIX: Added Gender and DOB fields -->
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Gender *</label>
+                                <select id="stuGender" class="gpa-select" style="width:100%;">
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Date of Birth</label>
+                                <input type="date" id="stuDob" class="gpa-select" style="width:100%;" value="2010-01-01">
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Blood Group</label>
+                                <select id="stuBlood" class="gpa-select" style="width:100%;">
+                                    ${['A+','A-','B+','B-','O+','O-','AB+','AB-'].map(b => `<option value="${b}">${b}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Parent / Guardian Name *</label>
+                                <input type="text" id="stuParent" required class="gpa-select" style="width:100%;" placeholder="e.g. Maya Thapa">
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Contact Phone *</label>
+                                <input type="text" id="stuPhone" required class="gpa-select" style="width:100%;" placeholder="+977-98XXXXXXXX">
+                            </div>
+                            <div>
+                                <label style="font-size:12px; color:var(--text-muted);">Address *</label>
+                                <input type="text" id="stuAddress" required class="gpa-select" style="width:100%;" placeholder="e.g. Kavresthali, Ward 2">
+                            </div>
+                            <div style="grid-column: span 3; display:flex; justify-content:flex-end; gap:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:14px; margin-top:4px;">
+                                <button type="button" onclick="hideForm()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:var(--text-muted); padding:8px 16px; border-radius:8px; cursor:pointer; font-family:inherit;">Cancel</button>
+                                <button type="submit" class="login-btn" style="padding:8px 20px; font-size:12px;" id="formSubmitBtn">Save Registration</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Search & Filter -->
+                    <div class="card fade-in" style="margin-bottom:20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                        <div style="flex:1; position:relative; min-width:200px;">
+                            <input type="text" id="adminSearchInput" placeholder="Search student by name, ID or parent..." class="gpa-select" style="width:100%; padding-left:36px;">
+                            <i class='bx bx-search' style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
+                        </div>
+                        <select id="adminClassFilter" class="gpa-select" style="width:160px;">
+                            <option value="ALL">All Classes</option>
+                            ${CLASSES.map(c => `<option value="${c.id}">${c.name} ${c.section}</option>`).join('')}
+                        </select>
+                        <select id="adminGenderFilter" class="gpa-select" style="width:120px;">
+                            <option value="ALL">All Genders</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <span class="card-title"><i class='bx bx-group' style="color:var(--gold);"></i> Registered Students (<span id="adminStuCount">${allStudents.length}</span> Records)</span>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="table">
+                                <thead>
+                                    <tr><th>Student ID</th><th>Name</th><th>Class</th><th>Roll</th><th>Gender</th><th>Parent</th><th>Phone</th><th>Blood Group</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="adminStuBody">
+                                    ${renderAdminStudentRows(allStudents)}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+
+                window.showAddForm = function() {
+                    editingId = null;
+                    document.getElementById('formTitle').innerHTML = `<i class='bx bx-user-plus' style="color:var(--gold);"></i> Add New Student Registration`;
+                    document.getElementById('formSubmitBtn').textContent = 'Save Registration';
+                    document.getElementById('newStudentForm').reset();
+                    document.getElementById('addFormCard').style.display = 'block';
+                    document.getElementById('addFormCard').scrollIntoView({ behavior: 'smooth' });
+                };
+
+                window.editStudent = function(id) {
+                    const s = allStudents.find(x => x.id === id);
+                    if (!s) return;
+                    editingId = id;
+                    document.getElementById('formTitle').innerHTML = `<i class='bx bx-edit' style="color:var(--cyan);"></i> Edit Student — ${s.name}`;
+                    document.getElementById('formSubmitBtn').textContent = 'Save Changes';
+                    // Pre-fill the form
+                    document.getElementById('stuName').value = s.name;
+                    document.getElementById('stuClass').value = s.classId;
+                    document.getElementById('stuRoll').value = s.roll;
+                    document.getElementById('stuGender').value = s.gender || 'M';
+                    document.getElementById('stuDob').value = s.dob || '2010-01-01';
+                    document.getElementById('stuBlood').value = s.bloodGroup || 'O+';
+                    document.getElementById('stuParent').value = s.parent;
+                    document.getElementById('stuPhone').value = s.phone;
+                    document.getElementById('stuAddress').value = s.address;
+                    document.getElementById('addFormCard').style.display = 'block';
+                    document.getElementById('addFormCard').scrollIntoView({ behavior: 'smooth' });
+                };
+
+                window.hideForm = function() {
+                    document.getElementById('addFormCard').style.display = 'none';
+                    editingId = null;
+                };
+
+                function applyFilter() {
+                    const q   = document.getElementById('adminSearchInput').value.toLowerCase().trim();
+                    const cls = document.getElementById('adminClassFilter').value;
+                    const gen = document.getElementById('adminGenderFilter').value;
+                    const filtered = allStudents.filter(s => {
+                        const matchQ = s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q) || (s.parent && s.parent.toLowerCase().includes(q));
+                        const matchC = cls === 'ALL' || s.classId === cls;
+                        const matchG = gen === 'ALL' || s.gender === gen;
+                        return matchQ && matchC && matchG;
+                    });
+                    document.getElementById('adminStuBody').innerHTML = renderAdminStudentRows(filtered);
+                    document.getElementById('adminStuCount').textContent = filtered.length;
+                }
+
+                document.getElementById('adminSearchInput').addEventListener('input', applyFilter);
+                document.getElementById('adminClassFilter').addEventListener('change', applyFilter);
+                document.getElementById('adminGenderFilter').addEventListener('change', applyFilter);
+
+                document.getElementById('newStudentForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const clsVal     = document.getElementById('stuClass').value;
+                    const rollVal    = parseInt(document.getElementById('stuRoll').value);
+                    const nameVal    = document.getElementById('stuName').value.trim();
+                    const genderVal  = document.getElementById('stuGender').value;
+                    const dobVal     = document.getElementById('stuDob').value;
+                    const bloodVal   = document.getElementById('stuBlood').value;
+                    const parentVal  = document.getElementById('stuParent').value.trim();
+                    const phoneVal   = document.getElementById('stuPhone').value.trim();
+                    const addressVal = document.getElementById('stuAddress').value.trim();
+
+                    if (editingId) {
+                        // Edit existing student
+                        const idx = allStudents.findIndex(s => s.id === editingId);
+                        if (idx !== -1) {
+                            allStudents[idx] = { ...allStudents[idx], name: nameVal, classId: clsVal, roll: rollVal, gender: genderVal, dob: dobVal, bloodGroup: bloodVal, parent: parentVal, phone: phoneVal, address: addressVal };
+                            saveStudents(allStudents);
+                            applyFilter();
+                            alert(`Student "${nameVal}" updated successfully!`);
+                        }
+                    } else {
+                        // Add new student
+                        const rollStr = rollVal < 10 ? '00' + rollVal : (rollVal < 100 ? '0' + rollVal : '' + rollVal);
+                        const newId = `STU-${clsVal.replace('C','')}-${rollStr}`;
+                        const newStu = { id: newId, name: nameVal, classId: clsVal, roll: rollVal, gender: genderVal, phone: phoneVal, parent: parentVal, dob: dobVal, address: addressVal, bloodGroup: bloodVal };
+                        allStudents.push(newStu);
+                        saveStudents(allStudents);
+                        applyFilter();
+                        alert(`Student "${nameVal}" registered with ID ${newId}!`);
+                    }
+                    hideForm();
+                });
+
+                window.deleteStudent = function(id) {
+                    const s = allStudents.find(x => x.id === id);
+                    if (confirm(`Remove student "${s ? s.name : id}" from the database? This cannot be undone.`)) {
+                        allStudents = allStudents.filter(s => s.id !== id);
+                        saveStudents(allStudents);
+                        applyFilter();
+                    }
+                };
+            }
+        });
+    </script>
+</body>
+</html>
