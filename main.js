@@ -2,17 +2,6 @@
 // PRELOADER & IMAGE ENTRY ANIMATION
 // ============================================
 const imgBox = document.querySelector('.img-box');
-const SPECTRUM = [
-    '0,245,255',
-    '255,0,229',
-    '255,215,0',
-    '0,255,157',
-    '192,132,252',
-    '251,113,133',
-    '96,165,250',
-    '255,107,107',
-];
-
 if (imgBox) {
     const setupInitialImagePosition = () => {
         const rect = imgBox.getBoundingClientRect();
@@ -93,16 +82,27 @@ let mouseX = 0, mouseY = 0;
 let lastScrollY = window.scrollY || 0;
 let scrollVelocity = 0, targetScrollVelocity = 0;
 
-if (!canvas || !ctx) {
-    console.warn('Particle background skipped: canvas not found.');
-} else {
+// Full-spectrum node colours
+const SPECTRUM = [
+    '0,245,255',    // cyan
+    '255,0,229',    // magenta
+    '255,215,0',    // gold
+    '0,255,157',    // emerald
+    '192,132,252',  // violet
+    '251,113,133',  // rose
+    '96,165,250',   // sapphire
+    '255,107,107',  // coral
+];
 
 function resizeCanvas() {
+    if (!canvas) return;
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
 }
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+if (canvas) {
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+}
 
 // ── 1. Multicolour twinkling stars ──────────────────────────────────
 class TwinklingStar {
@@ -264,6 +264,7 @@ class AuroraWave {
 }
 
 function initParticles() {
+    if (!canvas || !ctx) return;
     twinklingStars = [];
     const starCount = Math.min(200, Math.floor(canvas.width * canvas.height / 7000));
     for (let i = 0; i < starCount; i++) twinklingStars.push(new TwinklingStar());
@@ -337,7 +338,6 @@ function animateParticles(ts = 0) {
 if (canvas && ctx) {
     initParticles();
     animateParticles();
-}
 }
 
 document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
@@ -470,10 +470,8 @@ const header      = document.querySelector('.header');
 const scrollTopBtn= document.getElementById('scroll-top');
 
 window.addEventListener('scroll', () => {
-    if (header) {
-        if (window.scrollY > 100) header.classList.add('sticky');
-        else header.classList.remove('sticky');
-    }
+    if (window.scrollY > 100) header.classList.add('sticky');
+    else                       header.classList.remove('sticky');
 
     if (scrollTopBtn) {
         if (window.scrollY > 500) scrollTopBtn.classList.add('active');

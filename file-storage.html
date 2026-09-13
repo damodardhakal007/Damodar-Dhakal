@@ -1064,6 +1064,116 @@
             flex-shrink: 0;
             margin-top: 2px;
         }
+
+        /* Google Drive & Encryption Styles */
+        .gdrive-banner {
+            background: linear-gradient(135deg, rgba(66, 133, 244, 0.12) 0%, rgba(52, 168, 83, 0.08) 100%);
+            border: 1px solid rgba(66, 133, 244, 0.35);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .gdrive-banner-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .gdrive-banner-icon {
+            font-size: 2.2rem;
+            color: #4285f4;
+            flex-shrink: 0;
+        }
+
+        .gdrive-banner-text h4 {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gdrive-banner-text p {
+            font-size: 0.82rem;
+            color: #c7d2fe;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .gdrive-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: rgba(66, 133, 244, 0.15);
+            border: 1px solid rgba(66, 133, 244, 0.3);
+            color: #93c5fd;
+        }
+
+        .enc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: #fcd34d;
+        }
+
+        .dest-toggle-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .dest-option-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-muted);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .dest-option-btn:hover {
+            border-color: rgba(0, 245, 255, 0.4);
+            color: #fff;
+        }
+
+        .dest-option-btn.active {
+            background: rgba(66, 133, 244, 0.18);
+            border-color: #4285f4;
+            color: #93c5fd;
+            font-weight: 600;
+        }
+
+        .dest-option-btn.active.firebase-opt {
+            background: rgba(0, 245, 255, 0.12);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
     </style>
 </head>
 <body>
@@ -1086,6 +1196,10 @@
                     <div class="status-dot"></div>
                     <span id="connStatusText">Auth & DB Connected</span>
                 </div>
+                <div id="driveStatusPill" class="status-pill" style="border-color: rgba(66, 133, 244, 0.4); color: #93c5fd; background: rgba(66, 133, 244, 0.08); cursor: pointer;" title="Google Drive Cloud Vault Storage">
+                    <i class="bx bxl-google-cloud"></i>
+                    <span id="driveStatusText">Google Drive Ready</span>
+                </div>
                 <div id="storageStatusPill" class="status-pill" style="border-color: rgba(0, 245, 255, 0.3); color: var(--cyan); background: rgba(0, 245, 255, 0.08);">
                     <i class="bx bx-cloud"></i>
                     <span id="storageStatusText">Firebase Storage Enabled</span>
@@ -1094,6 +1208,31 @@
                 <a href="index.html" class="nav-btn"><i class="bx bx-home"></i> Home</a>
                 <button id="signOutBtn" class="nav-btn" style="display: none; border-color: rgba(255, 107, 107, 0.4); color: var(--coral);">
                     <i class="bx bx-log-out"></i> Log Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Google Drive Public Folder & Password Protection Banner -->
+        <div class="gdrive-banner" id="gdriveBanner">
+            <div class="gdrive-banner-info">
+                <i class="bx bxl-google-cloud gdrive-banner-icon"></i>
+                <div class="gdrive-banner-text">
+                    <h4>
+                        <i class="bx bx-folder-open" style="color: var(--cyan);"></i>
+                        Target Public Google Drive Vault Folder
+                        <span class="gdrive-badge"><i class="bx bx-check-shield"></i> Password-Ported AES-GCM</span>
+                    </h4>
+                    <p>
+                        Files sent to Google Drive are saved in your shared vault folder. Each file is client-side encrypted with your custom or user password (default: <code>damodardhakal008</code>) before upload so that anyone accessing the public folder link cannot inspect the contents without the password.
+                    </p>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <a href="https://drive.google.com/drive/folders/1BJYLri8s4QpqBYrWPFCXz6XFc1LxIwlS?usp=drive_link" target="_blank" rel="noopener noreferrer" class="storage-banner-btn" style="text-decoration: none; border-color: rgba(66, 133, 244, 0.5); color: #93c5fd; background: rgba(66, 133, 244, 0.12);">
+                    <i class="bx bx-link-external"></i> Open Drive Folder ↗
+                </a>
+                <button id="connectDriveBtn" class="storage-banner-btn" style="border-color: rgba(0, 245, 255, 0.4); color: var(--cyan);">
+                    <i class="bx bx-key"></i> <span id="connectDriveBtnText">Authenticate Drive</span>
                 </button>
             </div>
         </div>
@@ -1148,10 +1287,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="emailInput">Email Address</label>
+                    <label for="emailInput">Username or Email</label>
                     <div class="input-with-icon">
-                        <i class="bx bx-envelope input-icon-left"></i>
-                        <input type="email" id="emailInput" required placeholder="user@example.com" autocomplete="email">
+                        <i class="bx bx-user input-icon-left"></i>
+                        <input type="text" id="emailInput" required value="damodardhakal008" placeholder="damodardhakal008 or email@example.com" autocomplete="username email">
                     </div>
                 </div>
 
@@ -1162,7 +1301,7 @@
                     </label>
                     <div class="input-with-icon">
                         <i class="bx bx-lock input-icon-left"></i>
-                        <input type="password" id="passwordInput" required placeholder="At least 6 characters" autocomplete="current-password">
+                        <input type="password" id="passwordInput" required value="damodardhakal008" placeholder="damodardhakal008" autocomplete="current-password">
                         <button type="button" class="password-toggle-btn" id="togglePasswordBtn" title="Show/Hide password">
                             <i class="bx bx-show" id="passwordEyeIcon"></i>
                         </button>
@@ -1187,8 +1326,22 @@
             </form>
 
             <button type="button" id="quickDemoBtn" class="quick-demo-btn">
-                <i class="bx bx-bolt-circle"></i> Quick Test Account (Instant 1-Click Access)
+                <i class="bx bx-bolt-circle"></i> Quick 1-Click Access (damodardhakal008)
             </button>
+
+            <div style="display: flex; align-items: center; margin: 14px 0 10px; color: var(--text-muted); font-size: 0.75rem;">
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                <span style="padding: 0 10px;">or</span>
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+            </div>
+
+            <button type="button" id="googleSignInBtn" class="quick-demo-btn" style="border-color: rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.04); color: #fff;">
+                <i class="bx bxl-google" style="color: #ea4335; font-size: 1.15rem;"></i> Sign In with Google
+            </button>
+
+            <div style="margin-top: 14px; text-align: center; font-size: 0.78rem; color: var(--text-muted);">
+                <i class="bx bx-key" style="color: var(--cyan);"></i> Default Access — User: <strong style="color: var(--cyan);">damodardhakal008</strong> &nbsp;|&nbsp; Password: <strong style="color: var(--cyan);">damodardhakal008</strong>
+            </div>
         </div>
 
         <!-- VAULT DASHBOARD (Visible when logged in) -->
@@ -1226,11 +1379,75 @@
             <!-- Upload Card -->
             <div class="upload-card">
                 <div class="section-heading">
-                    <h3><i class="bx bx-cloud-upload" style="color: var(--cyan);"></i> Upload New File</h3>
-                    <span style="font-size: 0.8rem; color: var(--text-muted);">Uploaded to Firebase Storage & Cataloged in Firestore</span>
+                    <div>
+                        <h3><i class="bx bx-cloud-upload" style="color: var(--cyan);"></i> Upload New File</h3>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;">
+                            Securely transfer files to Firebase Storage or Password-Ported Google Drive Vault
+                        </div>
+                    </div>
+                    <span class="gdrive-badge" id="currentStorageModeBadge">
+                        <i class="bx bxl-google-cloud"></i> Target: Google Drive Vault
+                    </span>
                 </div>
 
                 <div id="uploadFeedback" class="feedback-box"></div>
+
+                <!-- Storage Destination Selector -->
+                <div style="margin-bottom: 14px;">
+                    <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">
+                        Choose Destination Backend:
+                    </div>
+                    <div class="dest-toggle-group">
+                        <button type="button" class="dest-option-btn active" id="destDriveBtn">
+                            <i class="bx bxl-google-cloud" style="color: #4285f4; font-size: 1.1rem;"></i>
+                            <strong>Google Drive Vault Folder</strong>
+                            <span class="enc-badge" style="margin-left: 4px;"><i class="bx bx-lock"></i> AES-GCM Encrypted</span>
+                        </button>
+                        <button type="button" class="dest-option-btn firebase-opt" id="destFirebaseBtn">
+                            <i class="bx bx-cloud" style="color: var(--cyan); font-size: 1.1rem;"></i>
+                            <span>Firebase Storage (Default)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Google Drive Password Protection Config Box -->
+                <div id="driveEncryptionBox" style="background: rgba(66, 133, 244, 0.08); border: 1px solid rgba(66, 133, 244, 0.3); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: #93c5fd; display: flex; align-items: center; gap: 6px;">
+                            <i class="bx bx-shield-quarter" style="font-size: 1.1rem; color: #fcd34d;"></i>
+                            Vault Folder Password Protection (AES-GCM 256-bit)
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">
+                            Folder: <code>1BJYLri8s4QpqBYrWPFCXz6XFc1LxIwlS</code>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group" style="margin: 0;">
+                            <label for="vaultPasswordInput" style="font-size: 0.8rem; color: #d1d5db;">
+                                Encryption Password (User Password)
+                            </label>
+                            <div class="input-with-icon">
+                                <i class="bx bx-key input-icon-left" style="color: var(--gold);"></i>
+                                <input type="password" id="vaultPasswordInput" value="damodardhakal008" placeholder="Enter password to lock this file">
+                                <button type="button" class="password-toggle-btn" id="toggleVaultPassBtn" title="Show/Hide password">
+                                    <i class="bx bx-show" id="vaultPassEyeIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label for="vaultFolderInput" style="font-size: 0.8rem; color: #d1d5db;">
+                                Target Sub-Folder / Tag
+                            </label>
+                            <div class="input-with-icon">
+                                <i class="bx bx-folder input-icon-left"></i>
+                                <input type="text" id="vaultFolderInput" value="damodardhakal008-vault" placeholder="Sub-folder or profile name">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 0.76rem; color: #93c5fd; display: flex; align-items: center; gap: 6px;">
+                        <i class="bx bx-info-circle"></i> Files uploaded to the public Drive link are locked with this password. Anyone opening the link without your password will only see encrypted binary data.
+                    </div>
+                </div>
 
                 <input type="file" id="filePickerInput" style="display: none;">
                 <div class="dropzone" id="dropzone">
@@ -1257,6 +1474,7 @@
                             <i class="bx bx-folder input-icon-left"></i>
                             <select id="fileCategorySelect">
                                 <option value="Document">Document (PDF, Word, TXT)</option>
+                                <option value="Profile">Profile & Identification</option>
                                 <option value="Image">Image (PNG, JPG, SVG, WebP)</option>
                                 <option value="Code">Code / Script (JS, HTML, Python, JSON)</option>
                                 <option value="Finance">Finance & Banking</option>
@@ -1275,7 +1493,7 @@
                     </div>
 
                     <button id="startUploadBtn" class="submit-btn" style="margin: 0; white-space: nowrap;" disabled>
-                        <i class="bx bx-upload"></i> Upload to Vault
+                        <i class="bx bx-upload"></i> <span id="startUploadBtnText">Upload to Vault</span>
                     </button>
                 </div>
             </div>
@@ -1376,10 +1594,21 @@
                         <td>Description</td>
                         <td id="modalMetaDesc" style="font-family: inherit; color: #b0c4de;">—</td>
                     </tr>
+                    <tr id="modalDriveLinkRow" style="display: none;">
+                        <td>Google Drive URL</td>
+                        <td><a id="modalMetaDriveLink" href="#" target="_blank" rel="noopener noreferrer" style="color: var(--cyan); text-decoration: underline; word-break: break-all;">Open in Google Drive ↗</a></td>
+                    </tr>
+                    <tr id="modalEncryptedRow" style="display: none;">
+                        <td>Security Status</td>
+                        <td id="modalMetaEncrypted" style="color: var(--gold);"><i class="bx bx-lock-alt"></i> AES-GCM Encrypted (Password Protected)</td>
+                    </tr>
                 </tbody>
             </table>
 
-            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <div style="display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap;">
+                <button id="modalDecryptDownloadBtn" class="submit-btn" style="width: auto; padding: 10px 20px; display: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="bx bx-key"></i> Unlock &amp; Decrypt File
+                </button>
                 <a id="modalDownloadBtn" class="submit-btn" style="width: auto; padding: 10px 20px; text-decoration: none;" target="_blank" download>
                     <i class="bx bx-download"></i> Download File
                 </a>
@@ -1457,6 +1686,9 @@
         </div>
     </div>
 
+    <!-- Google Identity Services client for Drive OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <!-- Firebase SDK Modular Scripts -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
@@ -1464,6 +1696,8 @@
             getAuth, 
             createUserWithEmailAndPassword, 
             signInWithEmailAndPassword, 
+            signInWithPopup,
+            GoogleAuthProvider,
             signOut, 
             onAuthStateChanged,
             updateProfile,
@@ -1496,6 +1730,217 @@
         let selectedUploadFile = null;
         let isRegistering = false;
         let firebaseConfig = null;
+
+        // Drive & Encryption State
+        let driveAccessToken = null;
+        let tokenClient = null;
+        let selectedDestination = 'drive'; // 'drive' | 'firebase'
+        const DRIVE_PUBLIC_FOLDER_ID = '1BJYLri8s4QpqBYrWPFCXz6XFc1LxIwlS';
+        const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+
+        // ==========================================
+        // CLIENT-SIDE AES-GCM ENCRYPTION / DECRYPTION
+        // Password ported with user password
+        // ==========================================
+        async function deriveAesKey(password, salt) {
+            const enc = new TextEncoder();
+            const keyMaterial = await window.crypto.subtle.importKey(
+                'raw',
+                enc.encode(password),
+                { name: 'PBKDF2' },
+                false,
+                ['deriveKey']
+            );
+            return await window.crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: salt,
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                keyMaterial,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt', 'decrypt']
+            );
+        }
+
+        async function encryptFileWithPassword(file, password) {
+            const salt = window.crypto.getRandomValues(new Uint8Array(16));
+            const iv = window.crypto.getRandomValues(new Uint8Array(12));
+            const key = await deriveAesKey(password, salt);
+            const fileBuffer = await file.arrayBuffer();
+            const ciphertext = await window.crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv: iv },
+                key,
+                fileBuffer
+            );
+
+            // Structure binary: [16 bytes salt][12 bytes iv][ciphertext]
+            const combined = new Uint8Array(salt.byteLength + iv.byteLength + ciphertext.byteLength);
+            combined.set(salt, 0);
+            combined.set(iv, salt.byteLength);
+            combined.set(new Uint8Array(ciphertext), salt.byteLength + iv.byteLength);
+
+            return new Blob([combined], { type: 'application/octet-stream' });
+        }
+
+        async function decryptBufferWithPassword(encryptedBuffer, password) {
+            const dataView = new Uint8Array(encryptedBuffer);
+            if (dataView.byteLength < 28) {
+                throw new Error('Encrypted payload too short or corrupted.');
+            }
+            const salt = dataView.slice(0, 16);
+            const iv = dataView.slice(16, 28);
+            const ciphertext = dataView.slice(28);
+
+            const key = await deriveAesKey(password, salt);
+            return await window.crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: iv },
+                key,
+                ciphertext
+            );
+        }
+
+        // ==========================================
+        // GOOGLE DRIVE API & OAUTH CLIENT MANAGEMENT
+        // In-memory token acquisition (Workspace skill compliant)
+        // ==========================================
+        function initGoogleDriveTokenClient() {
+            if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+                return false;
+            }
+            if (!tokenClient && firebaseConfig && firebaseConfig.oAuthClientId) {
+                tokenClient = window.google.accounts.oauth2.initTokenClient({
+                    client_id: firebaseConfig.oAuthClientId,
+                    scope: DRIVE_SCOPE,
+                    callback: () => {} // Overridden per request
+                });
+            }
+            return !!tokenClient;
+        }
+
+        function requestDriveAccessToken(promptMode = '') {
+            return new Promise((resolve, reject) => {
+                if (!initGoogleDriveTokenClient()) {
+                    return reject(new Error('Google Drive client unavailable. Please check your browser connection.'));
+                }
+                tokenClient.callback = (tokenResponse) => {
+                    if (tokenResponse.error) {
+                        return reject(new Error(tokenResponse.error_description || tokenResponse.error));
+                    }
+                    driveAccessToken = tokenResponse.access_token;
+                    updateDriveStatusPill(true);
+                    resolve(tokenResponse.access_token);
+                };
+                tokenClient.requestAccessToken({ prompt: promptMode });
+            });
+        }
+
+        async function ensureDriveAccessToken(interactive = true) {
+            if (driveAccessToken) return driveAccessToken;
+            try {
+                // Try non-prompting first if token was recently used
+                return await requestDriveAccessToken('');
+            } catch (err) {
+                if (interactive) {
+                    return await requestDriveAccessToken('consent');
+                }
+                throw err;
+            }
+        }
+
+        function updateDriveStatusPill(connected) {
+            const pill = document.getElementById('driveStatusPill');
+            if (pill) {
+                if (connected) {
+                    pill.className = 'drive-status-pill connected';
+                    pill.innerHTML = `<i class="bx bx-check-circle" style="color: var(--emerald);"></i> Drive Authorized: Public Vault Synced`;
+                } else {
+                    pill.className = 'drive-status-pill pending';
+                    pill.innerHTML = `<i class="bx bx-time"></i> Drive: Authorization Required for Vault`;
+                }
+            }
+        }
+
+        // Create or locate user-specific subfolder in Drive
+        async function getOrCreateDriveFolder(folderName, parentFolderId, token) {
+            try {
+                // Search for existing subfolder inside parent
+                const q = encodeURIComponent(`mimeType = 'application/vnd.google-apps.folder' and name = '${folderName.replace(/'/g, "\\'")}' and '${parentFolderId}' in parents and trashed = false`);
+                const searchRes = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,webViewLink)`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (searchRes.ok) {
+                    const searchData = await searchRes.json();
+                    if (searchData.files && searchData.files.length > 0) {
+                        return searchData.files[0];
+                    }
+                }
+            } catch (e) {
+                console.warn('Subfolder search notice, attempting creation:', e);
+            }
+
+            // Create new folder inside parent folder
+            const folderMeta = {
+                name: folderName,
+                mimeType: 'application/vnd.google-apps.folder',
+                parents: [parentFolderId]
+            };
+            const createRes = await fetch('https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(folderMeta)
+            });
+
+            if (!createRes.ok) {
+                const errJson = await createRes.json().catch(() => ({}));
+                throw new Error(errJson.error ? errJson.error.message : `Folder creation failed (${createRes.status})`);
+            }
+            return await createRes.json();
+        }
+
+        // Multipart Upload to Google Drive
+        async function uploadFileToGoogleDrive(fileBlob, metadata, token, onProgress) {
+            const boundary = '-------314159265358979323846';
+            const delimiter = `\r\n--${boundary}\r\n`;
+            const closeDelimiter = `\r\n--${boundary}--`;
+
+            const metaPart = `Content-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}`;
+            const filePartHeader = `Content-Type: application/octet-stream\r\n\r\n`;
+
+            const metaBytes = new TextEncoder().encode(delimiter + metaPart + delimiter + filePartHeader);
+            const closeBytes = new TextEncoder().encode(closeDelimiter);
+            const fileBytes = new Uint8Array(await fileBlob.arrayBuffer());
+
+            const fullPayload = new Uint8Array(metaBytes.byteLength + fileBytes.byteLength + closeBytes.byteLength);
+            fullPayload.set(metaBytes, 0);
+            fullPayload.set(fileBytes, metaBytes.byteLength);
+            fullPayload.set(closeBytes, metaBytes.byteLength + fileBytes.byteLength);
+
+            if (onProgress) onProgress(65);
+
+            const uploadUrl = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink,size,mimeType';
+            const res = await fetch(uploadUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': `multipart/related; boundary=${boundary}`
+                },
+                body: fullPayload
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error ? errData.error.message : `Drive upload failed (${res.status})`);
+            }
+
+            if (onProgress) onProgress(90);
+            return await res.json();
+        }
 
         async function initFirebase() {
             try {
@@ -1671,21 +2116,37 @@
                 const hasDesc = file.description ? `<div class="file-desc">${escapeHtml(file.description)}</div>` : '';
                 
                 // Determine preview source: downloadUrl from Firebase Storage or fileData
+                const isEncrypted = !!file.isEncrypted;
                 const fileSource = file.downloadUrl || file.fileData;
-                const thumbnail = (isImage && fileSource) 
+                const thumbnail = (!isEncrypted && isImage && fileSource) 
                     ? `<img src="${fileSource}" alt="${escapeHtml(file.name)}" class="file-preview-thumb" loading="lazy">` 
                     : '';
 
-                const backendTag = file.downloadUrl 
-                    ? `<span class="storage-source-badge"><i class='bx bx-cloud'></i> Storage</span>` 
-                    : `<span class="storage-source-badge" style="color: var(--sapphire); border-color: rgba(96,165,250,0.3);"><i class='bx bx-data'></i> Cloud DB</span>`;
+                let backendTag = '';
+                if (file.storageBackend === 'Google Drive Public Vault' || file.driveFileId) {
+                    backendTag = `<span class="storage-source-badge" style="color: #60a5fa; border-color: rgba(96,165,250,0.4);"><i class='bx bxl-google-cloud'></i> Drive Vault</span>`;
+                } else if (file.downloadUrl) {
+                    backendTag = `<span class="storage-source-badge"><i class='bx bx-cloud'></i> Storage</span>`;
+                } else {
+                    backendTag = `<span class="storage-source-badge" style="color: var(--sapphire); border-color: rgba(96,165,250,0.3);"><i class='bx bx-data'></i> Cloud DB</span>`;
+                }
+
+                const encBadge = isEncrypted 
+                    ? `<span class="enc-badge"><i class='bx bx-lock-alt'></i> AES-GCM Encrypted</span>` 
+                    : '';
+
+                const driveDirectAction = file.driveWebViewLink 
+                    ? `<a href="${file.driveWebViewLink}" target="_blank" rel="noopener noreferrer" class="icon-btn" title="Open in Google Drive" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: #60a5fa;">
+                        <i class='bx bxl-google-cloud'></i>
+                       </a>` 
+                    : '';
 
                 return `
-                    <div class="file-card" data-id="${file.id}">
+                    <div class="file-card ${isEncrypted ? 'encrypted-card' : ''}" data-id="${file.id}">
                         ${thumbnail}
                         <div class="file-card-top">
-                            <div class="file-icon-box" style="color: ${icon.color};">
-                                <i class="${icon.icon}"></i>
+                            <div class="file-icon-box" style="color: ${isEncrypted ? 'var(--gold)' : icon.color};">
+                                <i class="${isEncrypted ? 'bx bx-shield-quarter' : icon.icon}"></i>
                             </div>
                             <div class="file-card-info">
                                 <div class="file-name" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</div>
@@ -1697,15 +2158,17 @@
                                 </div>
                             </div>
                         </div>
+                        ${encBadge}
                         ${hasDesc}
                         <div class="file-card-footer">
                             <span class="file-cat-tag">${escapeHtml(file.category || 'General')}</span>
                             <div class="file-actions">
+                                ${driveDirectAction}
                                 <button class="icon-btn view-btn" title="View / Inspect" data-id="${file.id}">
                                     <i class="bx bx-show"></i>
                                 </button>
-                                <button class="icon-btn download-btn" title="Download" data-id="${file.id}">
-                                    <i class="bx bx-download"></i>
+                                <button class="icon-btn download-btn" title="${isEncrypted ? 'Decrypt & Download' : 'Download'}" data-id="${file.id}">
+                                    <i class="${isEncrypted ? 'bx bx-key' : 'bx bx-download'}"></i>
                                 </button>
                                 <button class="icon-btn delete delete-btn" title="Delete File" data-id="${file.id}">
                                     <i class="bx bx-trash"></i>
@@ -1771,7 +2234,7 @@
             else if (file.name.match(/\.(xlsx|xls|csv)$/i)) catSelect.value = 'Finance';
         }
 
-        // Upload Button Click with Firebase Storage + Firestore Fallback
+        // Upload Button Click with Google Drive Password-Ported Vault & Firebase Storage
         startUploadBtn.addEventListener('click', async () => {
             if (!selectedUploadFile || !currentUser) return;
 
@@ -1780,11 +2243,95 @@
             const category = document.getElementById('fileCategorySelect').value;
             const description = document.getElementById('fileDescInput').value.trim();
             const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-            const storagePath = `users/${currentUser.uid}/files/${Date.now()}_${safeFileName}`;
 
             startUploadBtn.disabled = true;
             startUploadBtn.innerHTML = `<i class="bx bx-loader-alt bx-spin"></i> Uploading...`;
             progressWrapper.style.display = 'block';
+
+            // Check upload destination: Google Drive or Firebase Storage
+            if (selectedDestination === 'drive') {
+                try {
+                    const vaultPass = (document.getElementById('vaultPasswordInput').value || 'damodardhakal008').trim();
+                    const subfolderName = (document.getElementById('vaultFolderInput').value || 'damodardhakal008-vault').trim();
+
+                    updateProgress(15, 'Requesting Google Drive authorization...');
+                    const token = await ensureDriveAccessToken(true);
+
+                    updateProgress(35, `Encrypting with AES-GCM (Password-Ported)...`);
+                    const encryptedBlob = await encryptFileWithPassword(file, vaultPass);
+
+                    updateProgress(50, `Locating/Creating protected folder "${subfolderName}" in Drive...`);
+                    let targetParentId = DRIVE_PUBLIC_FOLDER_ID;
+                    let targetSubfolderObj = null;
+
+                    try {
+                        targetSubfolderObj = await getOrCreateDriveFolder(subfolderName, DRIVE_PUBLIC_FOLDER_ID, token);
+                        if (targetSubfolderObj && targetSubfolderObj.id) {
+                            targetParentId = targetSubfolderObj.id;
+                        }
+                    } catch (folderErr) {
+                        console.warn('Subfolder lookup warning, falling back to public folder:', folderErr);
+                    }
+
+                    updateProgress(65, 'Uploading password-locked file to Google Drive folder...');
+                    const driveMetadata = {
+                        name: `${file.name}.vault.enc`,
+                        parents: [targetParentId],
+                        description: `Secure Cloud File Vault: AES-GCM 256-bit password-protected. Category: ${category}. Original: ${file.name}`
+                    };
+
+                    const driveUploadResult = await uploadFileToGoogleDrive(encryptedBlob, driveMetadata, token, (p) => {
+                        updateProgress(p, `Transferring payload to Google Drive: ${p}%`);
+                    });
+
+                    updateProgress(85, 'Cataloging in Firestore Cloud Vault...');
+                    // Also store encrypted base64 payload as in-app offline cache fallback
+                    const encryptedBase64 = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.readAsDataURL(encryptedBlob);
+                    });
+
+                    const fileRecord = {
+                        fileId: fileId,
+                        userId: currentUser.uid,
+                        name: file.name,
+                        size: file.size,
+                        encryptedSize: encryptedBlob.size,
+                        mimeType: file.type || 'application/octet-stream',
+                        uploadDate: new Date().toISOString(),
+                        category: category,
+                        description: description,
+                        storageBackend: 'Google Drive Public Vault',
+                        isEncrypted: true,
+                        encryptionAlgorithm: 'AES-GCM-256',
+                        driveFileId: driveUploadResult.id,
+                        driveWebViewLink: driveUploadResult.webViewLink || `https://drive.google.com/file/d/${driveUploadResult.id}/view`,
+                        driveFolderId: targetParentId,
+                        driveFolderName: subfolderName,
+                        publicParentFolderUrl: `https://drive.google.com/drive/folders/${DRIVE_PUBLIC_FOLDER_ID}`,
+                        fileData: encryptedBase64
+                    };
+
+                    const fileDocRef = doc(db, 'users', currentUser.uid, 'files', fileId);
+                    await setDoc(fileDocRef, fileRecord);
+
+                    updateProgress(100, 'Upload Complete!');
+                    showUploadFeedback(`✅ "${file.name}" encrypted with your password and uploaded to your Google Drive folder!`, 'success');
+                    
+                    resetUploadUI();
+                    await loadUserFiles();
+                    return;
+                } catch (driveErr) {
+                    console.error('Google Drive upload error:', driveErr);
+                    showUploadFeedback('Drive Upload Error: ' + driveErr.message + ' (You can switch to Firebase Storage above if needed)', 'error');
+                    resetUploadUI();
+                    return;
+                }
+            }
+
+            // Fallback / Firebase Storage destination branch
+            const storagePath = `users/${currentUser.uid}/files/${Date.now()}_${safeFileName}`;
             updateProgress(10, 'Connecting to Firebase Storage...');
 
             let uploadedViaStorage = false;
@@ -1849,7 +2396,8 @@
                     mimeType: file.type || 'application/octet-stream',
                     uploadDate: new Date().toISOString(),
                     category: category,
-                    description: description
+                    description: description,
+                    isEncrypted: false
                 };
 
                 if (uploadedViaStorage && downloadUrl) {
@@ -1940,12 +2488,65 @@
             }
         }
 
-        // Download File
-        function downloadFile(fileId) {
+        // Download File (with decryption if password protected)
+        async function downloadFile(fileId) {
             const file = userFilesList.find(f => f.id === fileId);
             if (!file) return;
 
+            if (file.isEncrypted) {
+                const defaultPass = 'damodardhakal008';
+                const passPrompt = prompt(`🔐 This file is password-protected with AES-GCM.\nEnter decryption password:`, defaultPass);
+                if (passPrompt === null) return; // User cancelled
+
+                try {
+                    let encryptedArrayBuffer;
+                    if (file.fileData) {
+                        const base64Data = file.fileData.split(',')[1];
+                        const binaryStr = atob(base64Data);
+                        const len = binaryStr.length;
+                        const bytes = new Uint8Array(len);
+                        for (let i = 0; i < len; i++) {
+                            bytes[i] = binaryStr.charCodeAt(i);
+                        }
+                        encryptedArrayBuffer = bytes.buffer;
+                    } else if (file.downloadUrl) {
+                        const res = await fetch(file.downloadUrl);
+                        encryptedArrayBuffer = await res.arrayBuffer();
+                    } else if (file.driveFileId) {
+                        const token = await ensureDriveAccessToken(true);
+                        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.driveFileId}?alt=media`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        if (!res.ok) throw new Error('Could not retrieve encrypted file from Google Drive');
+                        encryptedArrayBuffer = await res.arrayBuffer();
+                    } else {
+                        throw new Error('Encrypted file source not accessible');
+                    }
+
+                    const decryptedBuffer = await decryptBufferWithPassword(encryptedArrayBuffer, passPrompt.trim());
+                    const decryptedBlob = new Blob([decryptedBuffer], { type: file.mimeType || 'application/octet-stream' });
+                    const blobUrl = URL.createObjectURL(decryptedBlob);
+
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = file.name || 'decrypted_file';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+                    return;
+                } catch (decErr) {
+                    console.error('Decryption failed:', decErr);
+                    alert('❌ Decryption Failed: Incorrect password or corrupted encrypted payload.');
+                    return;
+                }
+            }
+
             const url = file.downloadUrl || file.fileData;
+            if (!url && file.driveWebViewLink) {
+                window.open(file.driveWebViewLink, '_blank');
+                return;
+            }
             if (!url) {
                 alert('File source is not available.');
                 return;
@@ -1977,40 +2578,92 @@
             document.getElementById('modalMetaOwner').textContent = file.userId;
             document.getElementById('modalMetaDesc').textContent = file.description || 'No description provided';
 
+            // Google Drive Link row
+            const driveRow = document.getElementById('modalDriveLinkRow');
+            const driveLinkA = document.getElementById('modalMetaDriveLink');
+            if (file.driveWebViewLink || file.driveFileId) {
+                driveRow.style.display = 'table-row';
+                driveLinkA.href = file.driveWebViewLink || `https://drive.google.com/file/d/${file.driveFileId}/view`;
+                driveLinkA.textContent = `Open in Google Drive (${file.driveFolderName || 'Public Vault'}) ↗`;
+            } else {
+                driveRow.style.display = 'none';
+            }
+
+            // Encryption row and decrypt action button
+            const encRow = document.getElementById('modalEncryptedRow');
+            const decryptBtn = document.getElementById('modalDecryptDownloadBtn');
             const dlBtn = document.getElementById('modalDownloadBtn');
-            const fileUrl = file.downloadUrl || file.fileData;
-            dlBtn.href = fileUrl;
-            dlBtn.download = file.name;
+
+            if (file.isEncrypted) {
+                encRow.style.display = 'table-row';
+                decryptBtn.style.display = 'inline-flex';
+                decryptBtn.onclick = () => downloadFile(file.id);
+                dlBtn.style.display = 'none';
+            } else {
+                encRow.style.display = 'none';
+                decryptBtn.style.display = 'none';
+                dlBtn.style.display = 'inline-flex';
+                const fileUrl = file.downloadUrl || file.fileData;
+                dlBtn.href = fileUrl;
+                dlBtn.download = file.name;
+            }
 
             const previewBody = document.getElementById('modalPreviewBody');
             previewBody.innerHTML = '';
 
-            const mime = (file.mimeType || '').toLowerCase();
-
-            if (mime.startsWith('image/')) {
-                previewBody.innerHTML = `<img src="${fileUrl}" alt="${escapeHtml(file.name)}" class="preview-img">`;
-            } else if (file.fileData && (mime.startsWith('text/') || mime.includes('json') || mime.includes('javascript') || mime.includes('html'))) {
-                try {
-                    const base64Content = file.fileData.split(',')[1];
-                    const decoded = atob(base64Content);
-                    previewBody.innerHTML = `<pre class="preview-code">${escapeHtml(decoded.substring(0, 10000))}</pre>`;
-                } catch (e) {
-                    previewBody.innerHTML = `<p style="color: var(--text-muted);"><i class="bx bx-file" style="font-size: 3rem;"></i><br>Text preview unavailable.</p>`;
-                }
-            } else if (mime === 'application/pdf') {
-                previewBody.innerHTML = `<iframe src="${fileUrl}" style="width: 100%; height: 440px; border: none; border-radius: 8px;"></iframe>`;
-            } else if (mime.startsWith('audio/')) {
-                previewBody.innerHTML = `<audio controls src="${fileUrl}" style="width: 100%; margin: 20px 0;"></audio>`;
-            } else if (mime.startsWith('video/')) {
-                previewBody.innerHTML = `<video controls src="${fileUrl}" style="max-width: 100%; max-height: 440px; border-radius: 8px;"></video>`;
-            } else {
+            if (file.isEncrypted) {
                 previewBody.innerHTML = `
-                    <div style="text-align: center; color: var(--text-muted); padding: 24px;">
-                        <i class="bx bxs-file-blank" style="font-size: 4rem; color: var(--sapphire);"></i>
-                        <p style="margin-top: 10px; color: #fff;">File stored securely in cloud.</p>
-                        <p style="font-size: 0.85rem;">Click Download File below to inspect on your device.</p>
+                    <div style="text-align: center; color: var(--text-muted); padding: 32px 20px;">
+                        <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+                            <i class="bx bx-lock-alt" style="font-size: 2.4rem; color: var(--gold);"></i>
+                        </div>
+                        <h4 style="color: #fff; margin-bottom: 8px;">AES-GCM Password Protected File</h4>
+                        <p style="font-size: 0.86rem; max-width: 460px; margin: 0 auto 16px; line-height: 1.5; color: #d1d5db;">
+                            This file is encrypted before transmission. Even anyone holding the direct Google Drive public link cannot read its contents without your password.
+                        </p>
+                        <div style="display: inline-flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                            <button id="modalUnlockNowBtn" class="submit-btn" style="width: auto; padding: 8px 18px; font-size: 0.85rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="bx bx-key"></i> Unlock with User Password
+                            </button>
+                            ${file.driveWebViewLink ? `<a href="${file.driveWebViewLink}" target="_blank" rel="noopener noreferrer" class="dest-option-btn active" style="text-decoration: none; padding: 8px 16px; font-size: 0.85rem;"><i class='bx bxl-google-cloud'></i> View in Drive</a>` : ''}
+                        </div>
                     </div>
                 `;
+                setTimeout(() => {
+                    const unlockBtn = document.getElementById('modalUnlockNowBtn');
+                    if (unlockBtn) {
+                        unlockBtn.onclick = () => downloadFile(file.id);
+                    }
+                }, 50);
+            } else {
+                const fileUrl = file.downloadUrl || file.fileData;
+                const mime = (file.mimeType || '').toLowerCase();
+
+                if (mime.startsWith('image/') && fileUrl) {
+                    previewBody.innerHTML = `<img src="${fileUrl}" alt="${escapeHtml(file.name)}" class="preview-img">`;
+                } else if (file.fileData && (mime.startsWith('text/') || mime.includes('json') || mime.includes('javascript') || mime.includes('html'))) {
+                    try {
+                        const base64Content = file.fileData.split(',')[1];
+                        const decoded = atob(base64Content);
+                        previewBody.innerHTML = `<pre class="preview-code">${escapeHtml(decoded.substring(0, 10000))}</pre>`;
+                    } catch (e) {
+                        previewBody.innerHTML = `<p style="color: var(--text-muted);"><i class="bx bx-file" style="font-size: 3rem;"></i><br>Text preview unavailable.</p>`;
+                    }
+                } else if (mime === 'application/pdf' && fileUrl) {
+                    previewBody.innerHTML = `<iframe src="${fileUrl}" style="width: 100%; height: 440px; border: none; border-radius: 8px;"></iframe>`;
+                } else if (mime.startsWith('audio/') && fileUrl) {
+                    previewBody.innerHTML = `<audio controls src="${fileUrl}" style="width: 100%; margin: 20px 0;"></audio>`;
+                } else if (mime.startsWith('video/') && fileUrl) {
+                    previewBody.innerHTML = `<video controls src="${fileUrl}" style="max-width: 100%; max-height: 440px; border-radius: 8px;"></video>`;
+                } else {
+                    previewBody.innerHTML = `
+                        <div style="text-align: center; color: var(--text-muted); padding: 24px;">
+                            <i class="bx bxs-file-blank" style="font-size: 4rem; color: var(--sapphire);"></i>
+                            <p style="margin-top: 10px; color: #fff;">File stored securely in cloud.</p>
+                            <p style="font-size: 0.85rem;">Click Download File below to inspect on your device.</p>
+                        </div>
+                    `;
+                }
             }
 
             document.getElementById('previewModal').classList.add('active');
@@ -2139,17 +2792,20 @@
             // Auth Form Submission (Sign Up & Sign In)
             document.getElementById('authForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('emailInput').value.trim();
+                const rawInput = document.getElementById('emailInput').value.trim();
                 const password = document.getElementById('passwordInput').value;
-                const displayName = document.getElementById('displayNameInput').value.trim();
+                const displayName = document.getElementById('displayNameInput').value.trim() || 'Damodar Dhakal';
                 const confirmPassword = document.getElementById('confirmPasswordInput').value;
                 const submitBtn = document.getElementById('authSubmitBtn');
 
                 // Client-side Validation
-                if (!email) {
-                    showAuthFeedback('Please enter an email address.', 'error');
+                if (!rawInput) {
+                    showAuthFeedback('Please enter your username or email address.', 'error');
                     return;
                 }
+
+                // If user entered a username without @ (such as damodardhakal008), format as email for Firebase Auth
+                const email = rawInput.includes('@') ? rawInput : `${rawInput.toLowerCase()}@gmail.com`;
 
                 if (password.length < 6) {
                     showAuthFeedback('Password must be at least 6 characters.', 'error');
@@ -2172,20 +2828,37 @@
                         }
                         showAuthFeedback('✅ Account created successfully! Initializing vault...', 'success');
                     } else {
-                        await signInWithEmailAndPassword(auth, email, password);
-                        showAuthFeedback('✅ Welcome back! Vault unlocked.', 'success');
+                        try {
+                            await signInWithEmailAndPassword(auth, email, password);
+                            showAuthFeedback('✅ Welcome back! Vault unlocked.', 'success');
+                        } catch (loginErr) {
+                            // Seamless auto-provision if logging in with default user credentials on first visit
+                            if ((loginErr.code === 'auth/user-not-found' || loginErr.code === 'auth/invalid-credential') && email.toLowerCase() === 'damodardhakal008@gmail.com') {
+                                try {
+                                    const cred = await createUserWithEmailAndPassword(auth, email, password);
+                                    await updateProfile(cred.user, { displayName: 'Damodar Dhakal' });
+                                    showAuthFeedback('✅ Default account initialized! Vault unlocked.', 'success');
+                                    return;
+                                } catch (autoErr) {
+                                    console.warn('Auto-create notice:', autoErr);
+                                }
+                            }
+                            throw loginErr;
+                        }
                     }
                 } catch (err) {
                     console.error('Auth error:', err);
                     let msg = err.message;
                     if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
-                        msg = 'Invalid email or password. Please verify credentials or switch to "Create Account".';
+                        msg = 'Invalid username/email or password. Please verify credentials or switch to "Create Account".';
                     } else if (err.code === 'auth/email-already-in-use') {
-                        msg = 'This email is already registered. Please switch to the "Log In" tab to sign in.';
+                        msg = 'This account is already registered. Please switch to the "Log In" tab to sign in.';
                     } else if (err.code === 'auth/weak-password') {
                         msg = 'Password should be at least 6 characters.';
                     } else if (err.code === 'auth/operation-not-allowed') {
-                        msg = 'Email/Password sign-in is not enabled in Firebase Console. Please enable it under Authentication > Sign-in method.';
+                        const pid = firebaseConfig ? firebaseConfig.projectId : 'fifth-burner-jvd6f';
+                        showAuthFeedback(getOperationNotAllowedHtml(pid), 'error');
+                        return;
                     } else if (err.code === 'auth/too-many-requests') {
                         msg = 'Access temporarily disabled due to multiple failed login attempts. Try again later or reset password.';
                     }
@@ -2196,27 +2869,34 @@
                 }
             });
 
-            // Quick Demo Account (Instant 1-Click Access)
+            // Quick Access Account (Instant 1-Click Access with damodardhakal008)
             document.getElementById('quickDemoBtn').addEventListener('click', async () => {
-                const demoEmail = 'damodar.vault@demo.np';
-                const demoPass = 'Vault1234!';
-                document.getElementById('emailInput').value = demoEmail;
-                document.getElementById('passwordInput').value = demoPass;
+                const defaultUser = 'damodardhakal008';
+                const defaultEmail = 'damodardhakal008@gmail.com';
+                const defaultPass = 'damodardhakal008';
+                document.getElementById('emailInput').value = defaultUser;
+                document.getElementById('passwordInput').value = defaultPass;
                 
                 const submitBtn = document.getElementById('authSubmitBtn');
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = `<i class="bx bx-loader-alt bx-spin"></i> Unlocking Demo Vault...`;
+                submitBtn.innerHTML = `<i class="bx bx-loader-alt bx-spin"></i> Unlocking Vault...`;
 
                 try {
-                    await signInWithEmailAndPassword(auth, demoEmail, demoPass);
-                    showAuthFeedback('✅ Demo account signed in successfully!', 'success');
+                    await signInWithEmailAndPassword(auth, defaultEmail, defaultPass);
+                    showAuthFeedback('✅ Vault unlocked successfully with default account!', 'success');
                 } catch (err) {
                     try {
-                        const cred = await createUserWithEmailAndPassword(auth, demoEmail, demoPass);
-                        await updateProfile(cred.user, { displayName: 'Damodar Dhakal (Demo)' });
-                        showAuthFeedback('✅ Demo account provisioned and signed in!', 'success');
+                        const cred = await createUserWithEmailAndPassword(auth, defaultEmail, defaultPass);
+                        await updateProfile(cred.user, { displayName: 'Damodar Dhakal' });
+                        showAuthFeedback('✅ Default account initialized and vault unlocked!', 'success');
                     } catch (createErr) {
-                        showAuthFeedback('Demo account access notice: ' + createErr.message, 'error');
+                        console.error('Default account login notice:', createErr);
+                        if (createErr.code === 'auth/operation-not-allowed' || err.code === 'auth/operation-not-allowed') {
+                            const pid = firebaseConfig ? firebaseConfig.projectId : 'fifth-burner-jvd6f';
+                            showAuthFeedback(getOperationNotAllowedHtml(pid), 'error');
+                        } else {
+                            showAuthFeedback('Default access: ' + (createErr.code === 'auth/invalid-credential' ? 'Please check credentials.' : createErr.message), 'error');
+                        }
                     }
                 } finally {
                     submitBtn.disabled = false;
@@ -2224,11 +2904,39 @@
                 }
             });
 
+            // Google Sign In (1-Click Popup)
+            const googleBtn = document.getElementById('googleSignInBtn');
+            if (googleBtn) {
+                googleBtn.addEventListener('click', async () => {
+                    const prevHtml = googleBtn.innerHTML;
+                    googleBtn.disabled = true;
+                    googleBtn.innerHTML = `<i class="bx bx-loader-alt bx-spin"></i> Connecting to Google...`;
+                    try {
+                        const provider = new GoogleAuthProvider();
+                        provider.setCustomParameters({ prompt: 'select_account' });
+                        await signInWithPopup(auth, provider);
+                        showAuthFeedback('✅ Google account verified! Vault unlocked.', 'success');
+                    } catch (err) {
+                        console.error('Google Sign In notice:', err);
+                        if (err.code === 'auth/operation-not-allowed') {
+                            const pid = firebaseConfig ? firebaseConfig.projectId : 'fifth-burner-jvd6f';
+                            showAuthFeedback(getOperationNotAllowedHtml(pid), 'error');
+                        } else if (err.code !== 'auth/popup-closed-by-user') {
+                            showAuthFeedback('Google sign-in error: ' + err.message, 'error');
+                        }
+                    } finally {
+                        googleBtn.disabled = false;
+                        googleBtn.innerHTML = prevHtml;
+                    }
+                });
+            }
+
             // Sign Out
             document.getElementById('signOutBtn').addEventListener('click', async () => {
                 try {
                     await signOut(auth);
-                    document.getElementById('authForm').reset();
+                    document.getElementById('emailInput').value = 'damodardhakal008';
+                    document.getElementById('passwordInput').value = 'damodardhakal008';
                     showAuthFeedback('You have been logged out from your cloud vault.', 'success');
                 } catch (err) {
                     console.error('Sign out error:', err);
@@ -2269,6 +2977,46 @@
                     document.getElementById('storageGuideModal').classList.remove('active');
                 }
             });
+
+            // Google Drive vs Firebase Storage Destination Toggle
+            const destDriveBtn = document.getElementById('destDriveBtn');
+            const destFirebaseBtn = document.getElementById('destFirebaseBtn');
+            const driveOptionsBox = document.getElementById('driveOptionsBox');
+
+            if (destDriveBtn && destFirebaseBtn) {
+                destDriveBtn.addEventListener('click', () => {
+                    selectedDestination = 'drive';
+                    destDriveBtn.classList.add('active');
+                    destFirebaseBtn.classList.remove('active');
+                    if (driveOptionsBox) driveOptionsBox.style.display = 'block';
+                });
+
+                destFirebaseBtn.addEventListener('click', () => {
+                    selectedDestination = 'firebase';
+                    destFirebaseBtn.classList.add('active');
+                    destDriveBtn.classList.remove('active');
+                    if (driveOptionsBox) driveOptionsBox.style.display = 'none';
+                });
+            }
+
+            // Google Drive Connect / Re-Authorize Banner Button
+            const connectDriveBannerBtn = document.getElementById('connectDriveBannerBtn');
+            if (connectDriveBannerBtn) {
+                connectDriveBannerBtn.addEventListener('click', async () => {
+                    connectDriveBannerBtn.disabled = true;
+                    connectDriveBannerBtn.innerHTML = `<i class="bx bx-loader-alt bx-spin"></i> Authorizing...`;
+                    try {
+                        await ensureDriveAccessToken(true);
+                        showUploadFeedback('✅ Google Drive public folder authorized & ready for password-protected uploads!', 'success');
+                    } catch (authErr) {
+                        console.error('Drive Auth notice:', authErr);
+                        showUploadFeedback('Drive authorization: ' + authErr.message, 'error');
+                    } finally {
+                        connectDriveBannerBtn.disabled = false;
+                        connectDriveBannerBtn.innerHTML = `<i class='bx bx-link-external'></i> Connect Drive`;
+                    }
+                });
+            }
         }
 
         // Helper Utilities
@@ -2299,6 +3047,28 @@
             return text.replace(/[&<>"']/g, (m) => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
             }[m]));
+        }
+
+        function getOperationNotAllowedHtml(projectId = 'fifth-burner-jvd6f') {
+            const consoleUrl = `https://console.firebase.google.com/project/${encodeURIComponent(projectId)}/authentication/providers`;
+            return `
+                <div style="text-align: left; width: 100%; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 6px; color: #ff8080;">
+                        <i class='bx bx-error-circle' style="font-size: 1.25rem;"></i> Email/Password Provider Not Yet Enabled
+                    </div>
+                    <div style="font-size: 0.82rem; line-height: 1.5; color: rgba(255, 255, 255, 0.9);">
+                        To sign in with <strong>damodardhakal008</strong>, enable the Email/Password provider in your Firebase project:
+                    </div>
+                    <div style="background: rgba(0,0,0,0.35); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); font-size: 0.8rem; line-height: 1.6;">
+                        <strong>Step 1:</strong> Open <a href="${consoleUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--cyan); text-decoration: underline; font-weight: 600;">Firebase Console: Sign-in Providers ↗</a><br>
+                        <strong>Step 2:</strong> Click on <strong>Email/Password</strong> under "Sign-in providers"<br>
+                        <strong>Step 3:</strong> Toggle the first switch <strong>Enable</strong> to ON &amp; click <strong>Save</strong>
+                    </div>
+                    <div style="font-size: 0.78rem; color: var(--gold); display: flex; align-items: center; gap: 6px;">
+                        <i class='bx bx-bulb'></i> Once enabled, return here to unlock the vault. You can also click <strong>Sign In with Google</strong> below!
+                    </div>
+                </div>
+            `;
         }
 
         function showAuthFeedback(msg, type) {

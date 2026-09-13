@@ -42,7 +42,7 @@
                             <p style="color:var(--text-secondary); font-size:13px; margin:8px 0 12px; line-height:1.6;">${n.detail}</p>
                             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; font-size:11px; color:var(--text-muted);">
                                 <span>Author: <strong>${n.author}</strong></span>
-                                <button onclick="deleteNotice(${n.id})" style="background:none; border:none; color:var(--rose); cursor:pointer; font-size:13px; display:inline-flex; align-items:center; gap:4px; font-family:inherit;"><i class='bx bx-trash'></i> Delete</button>
+                                <button onclick="deleteNotice('${n.id}')" style="background:none; border:none; color:var(--rose); cursor:pointer; font-size:13px; display:inline-flex; align-items:center; gap:4px; font-family:inherit;"><i class='bx bx-trash'></i> Delete</button>
                             </div>
                         </div>
                     `;}).join('');
@@ -130,9 +130,9 @@
                 });
 
                 window.deleteNotice = function(id) {
-                    const n = currentNotices.find(x => x.id === id);
+                    const n = currentNotices.find(x => String(x.id) === String(id));
                     if (confirm(`Delete notice "${n ? n.title : id}"?`)) {
-                        currentNotices = currentNotices.filter(n => n.id !== id);
+                        currentNotices = currentNotices.filter(n => String(n.id) !== String(id));
                         saveNotices(currentNotices);
                         document.getElementById('noticesList').innerHTML = renderAdminNotices();
                     }

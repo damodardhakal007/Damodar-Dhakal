@@ -282,32 +282,48 @@ const INITIAL_PARENT_MESSAGES = [
 
 // ─── LOCAL STORAGE DATA GETTERS / SETTERS ────────────────────
 function getStoredStudents() {
-    const data = localStorage.getItem('kss_students');
-    return data ? JSON.parse(data) : INITIAL_STUDENTS;
+    try {
+        const data = localStorage.getItem('kss_students');
+        return data ? JSON.parse(data) : INITIAL_STUDENTS;
+    } catch(e) {
+        return INITIAL_STUDENTS;
+    }
 }
 function saveStudents(list) {
     localStorage.setItem('kss_students', JSON.stringify(list));
 }
 
 function getStoredGrades() {
-    const data = localStorage.getItem('kss_grades');
-    return data ? JSON.parse(data) : INITIAL_GRADES;
+    try {
+        const data = localStorage.getItem('kss_grades');
+        return data ? JSON.parse(data) : INITIAL_GRADES;
+    } catch(e) {
+        return INITIAL_GRADES;
+    }
 }
 function saveGrades(list) {
     localStorage.setItem('kss_grades', JSON.stringify(list));
 }
 
 function getStoredNotices() {
-    const data = localStorage.getItem('kss_notices');
-    return data ? JSON.parse(data) : INITIAL_NOTICES;
+    try {
+        const data = localStorage.getItem('kss_notices');
+        return data ? JSON.parse(data) : INITIAL_NOTICES;
+    } catch(e) {
+        return INITIAL_NOTICES;
+    }
 }
 function saveNotices(list) {
     localStorage.setItem('kss_notices', JSON.stringify(list));
 }
 
 function getStoredMessages() {
-    const data = localStorage.getItem('kss_messages');
-    return data ? JSON.parse(data) : INITIAL_PARENT_MESSAGES;
+    try {
+        const data = localStorage.getItem('kss_messages');
+        return data ? JSON.parse(data) : INITIAL_PARENT_MESSAGES;
+    } catch(e) {
+        return INITIAL_PARENT_MESSAGES;
+    }
 }
 function saveMessages(list) {
     localStorage.setItem('kss_messages', JSON.stringify(list));
@@ -315,8 +331,12 @@ function saveMessages(list) {
 
 // ── ATTENDANCE STORAGE (teacher marks → persisted) ────────────
 function getStoredAttendanceRecords() {
-    const data = localStorage.getItem('kss_attendance_records');
-    return data ? JSON.parse(data) : [];
+    try {
+        const data = localStorage.getItem('kss_attendance_records');
+        return data ? JSON.parse(data) : [];
+    } catch(e) {
+        return [];
+    }
 }
 function saveAttendanceRecords(list) {
     localStorage.setItem('kss_attendance_records', JSON.stringify(list));
@@ -608,10 +628,6 @@ function buildPortalPage(config) {
                             <i class='bx bx-error-circle'></i> Invalid username or password. Please try again.
                         </p>
                     </form>
-                    <div class="login-hint">
-                        <i class='bx bx-info-circle'></i>
-                        Demo credentials — Username: <span>${role}</span> &nbsp;|&nbsp; Password: <span>1234</span>
-                    </div>
                     <a href="../index.html" style="display:inline-block; margin-top:16px; font-size:12px; color:var(--text-muted); text-decoration:none; opacity:0.7; transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">
                         ← Switch role / Back to home
                     </a>
