@@ -18,35 +18,46 @@ if (imgBox) {
 }
 
 window.addEventListener('load', () => {
-    const preloader   = document.getElementById('preloader');
+    const preloader = document.getElementById('preloader');
     const preloaderText = document.getElementById('preloader-text');
-    const loaderRing  = preloader ? preloader.querySelector('.loader-ring') : null;
-    const fullText    = "Damodar Dhakal";
+    const loaderRing = preloader ? preloader.querySelector('.loader-ring') : null;
+    const fullText = 'Damodar Dhakal';
     let index = 1;
 
-    function typeEffect() {
-        if (index < fullText.length) {
-            if (index === 1 && loaderRing) loaderRing.classList.add('fade-out');
-            preloaderText.textContent += fullText.charAt(index);
-            index++;
-            setTimeout(typeEffect, 80);
-        } else {
-            setTimeout(() => {
-                preloader.classList.add('hidden');
-                if (imgBox) {
-                    imgBox.style.transition = 'transform 1.6s cubic-bezier(0.25,1,0.30,1), opacity 1.6s ease-out';
-                    imgBox.style.transform  = 'translate(0,0) scale(1)';
-                    imgBox.style.opacity    = '1';
-                    setTimeout(() => {
-                        imgBox.classList.add('floating');
-                        imgBox.style.transform = '';
-                        imgBox.style.transition = '';
-                    }, 1600);
-                }
-            }, 800);
+    if (preloader && preloaderText) {
+        function typeEffect() {
+            if (index < fullText.length) {
+                if (index === 1 && loaderRing) loaderRing.classList.add('fade-out');
+                preloaderText.textContent += fullText.charAt(index);
+                index++;
+                setTimeout(typeEffect, 80);
+            } else {
+                setTimeout(() => {
+                    preloader.classList.add('hidden');
+                    if (imgBox) {
+                        imgBox.style.transition = 'transform 1.6s cubic-bezier(0.25,1,0.30,1), opacity 1.6s ease-out';
+                        imgBox.style.transform = 'translate(0,0) scale(1)';
+                        imgBox.style.opacity = '1';
+                        setTimeout(() => {
+                            imgBox.classList.add('floating');
+                            imgBox.style.transform = '';
+                            imgBox.style.transition = '';
+                        }, 1600);
+                    }
+                }, 800);
+            }
         }
+        setTimeout(typeEffect, 1000);
+    } else if (imgBox) {
+        imgBox.style.transition = 'transform 1.6s cubic-bezier(0.25,1,0.30,1), opacity 1.6s ease-out';
+        imgBox.style.transform = 'translate(0,0) scale(1)';
+        imgBox.style.opacity = '1';
+        setTimeout(() => {
+            imgBox.classList.add('floating');
+            imgBox.style.transform = '';
+            imgBox.style.transition = '';
+        }, 1600);
     }
-    setTimeout(typeEffect, 1000);
 });
 
 // ============================================
@@ -54,7 +65,7 @@ window.addEventListener('load', () => {
 // Full-spectrum: rainbow stars, coloured nodes, prismatic shooting stars
 // ============================================
 const canvas = document.getElementById('particles-canvas');
-const ctx    = canvas.getContext('2d');
+const ctx = canvas ? canvas.getContext('2d') : null;
 
 const blob1 = document.querySelector('.blob-1');
 const blob2 = document.querySelector('.blob-2');
@@ -63,13 +74,17 @@ const blob4 = document.querySelector('.blob-4');
 const blob5 = document.querySelector('.blob-5');
 const blob6 = document.querySelector('.blob-6');
 
-let particles    = [];
+let particles = [];
 let twinklingStars = [];
-let shootingStars  = [];
-let auroraWaves    = [];
+let shootingStars = [];
+let auroraWaves = [];
 let mouseX = 0, mouseY = 0;
 let lastScrollY = window.scrollY || 0;
 let scrollVelocity = 0, targetScrollVelocity = 0;
+
+if (!canvas || !ctx) {
+    console.warn('Particle background skipped: canvas not found.');
+} else {
 
 // Full-spectrum node colours
 const SPECTRUM = [
@@ -320,8 +335,10 @@ function animateParticles(ts = 0) {
     requestAnimationFrame(animateParticles);
 }
 
-initParticles();
-animateParticles();
+if (canvas && ctx) {
+    initParticles();
+    animateParticles();
+}
 
 document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
 
@@ -410,11 +427,19 @@ if ('ontouchstart' in window) trailDots.forEach(d => d.style.display = 'none');
 // ============================================
 // TYPED.JS
 // ============================================
-var typed = new Typed(".text", {
-    strings: ["Banker","Coder","Web Developer","Android App Developer","AI Enthusiast","Entrepreneur"],
-    typeSpeed: 70, backSpeed: 50, backDelay: 1500,
-    loop: true, smartBackspace: true
-});
+const typedTarget = document.querySelector('.text');
+if (typedTarget && typeof Typed !== 'undefined') {
+    var typed = new Typed('.text', {
+        strings: ['Banker', 'Coder', 'Web Developer', 'Android App Developer', 'AI Enthusiast', 'Entrepreneur'],
+        typeSpeed: 70,
+        backSpeed: 50,
+        backDelay: 1500,
+        loop: true,
+        smartBackspace: true
+    });
+} else if (typedTarget) {
+    typedTarget.textContent = 'Banker';
+}
 
 // ============================================
 // MOBILE MENU
