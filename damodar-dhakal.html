@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Damodar Dhakal | Tool</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <style>
+        :root {
+            --poster-bg: #071a1a;
+            --poster-accent: #ff3037;
+            --poster-copy: #f4f6f5;
+        }
+        body {
+            background: radial-gradient(circle at top, #163333 0%, #061010 58%, #020707 100%);
+            color: var(--poster-copy);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+        .poster-page {
+            width: min(100%, 1100px);
+            margin: 0 auto;
+            padding: 28px 20px 48px;
+        }
+        .poster-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+        .poster-nav a {
+            color: #8ef3e5;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .poster-frame {
+            display: grid;
+            place-items: center;
+            padding: clamp(12px, 3vw, 28px);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 18px;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.4);
+        }
+        .poster-image {
+            display: block;
+            width: min(100%, 768px);
+            height: auto;
+            object-fit: contain;
+            background: var(--poster-bg);
+        }
+        .poster-missing {
+            display: none;
+            max-width: 520px;
+            padding: 36px 24px;
+            text-align: center;
+            line-height: 1.7;
+            color: #cfe8e5;
+        }
+        .poster-missing strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+        .poster-image:not([src]),
+        .poster-image.is-missing {
+            display: none;
+        }
+        .poster-frame.has-missing .poster-missing {
+            display: block;
+        }
+        @media (max-width: 600px) {
+            .poster-page { padding-inline: 12px; }
+            .poster-nav { align-items: flex-start; flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <main class="poster-page">
+        <nav class="poster-nav" aria-label="Tool navigation">
+            <a href="tools.html">&larr; Back to Tools</a>
+            <span>Damodar Dhakal</span>
+        </nav>
+
+        <section class="poster-frame" id="poster-frame" aria-label="Damodar Dhakal poster">
+            <img
+                class="poster-image"
+                src="damodar-dhakal-poster.jpg"
+                alt="Damodar Dhakal poster"
+                onerror="this.classList.add('is-missing'); document.getElementById('poster-frame').classList.add('has-missing');"
+            >
+            <p class="poster-missing">
+                <strong>Poster image not found</strong>
+                Place the supplied image beside this page as <b>damodar-dhakal-poster.jpg</b>. The image is displayed without editing or cropping.
+            </p>
+        </section>
+    </main>
+</body>
+</html>
