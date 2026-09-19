@@ -824,6 +824,9 @@ Return JSON:
       };
 
       newsArticles.unshift(newArticle);
+      scriptsData.forEach(script => {
+        script.prediction = calculatePrediction(script, newsArticles);
+      });
       return res.json({ article: newArticle, reasoning: parsed.reasoning });
     } catch (err) {
       console.error("News analysis error:", err);
@@ -866,6 +869,9 @@ Return JSON:
   };
 
   newsArticles.unshift(fallbackArticle);
+  scriptsData.forEach(script => {
+    script.prediction = calculatePrediction(script, newsArticles);
+  });
   res.json({ article: fallbackArticle, reasoning: "Evaluated using quantitative financial keyword scoring model." });
 });
 
